@@ -1,5 +1,5 @@
-#ifndef _KEYCODE_ENUMS_
-#define _KEYCODE_ENUMS_
+#ifndef _KOT_KEYCODE_ENUMS_
+#define _KOT_KEYCODE_ENUMS_
 
 enum class ButtonAction
 {

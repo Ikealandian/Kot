@@ -1,5 +1,5 @@
-#ifndef _WINDOW_EVENTS_
-#define _WINDOW_EVENTS_
+#ifndef _KOT_WINDOW_EVENTS_
+#define _KOT_WINDOW_EVENTS_
 
 #include <InputCodes.hpp>
 

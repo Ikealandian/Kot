@@ -3,8 +3,8 @@
 // platform/X11/Window.hpp
 // platform/Windows/Window.hpp
 
-#ifndef _WINDOW_INTERFACE_
-#define _WINDOW_INTERFACE_
+#ifndef _KOT_WINDOW_INTERFACE_
+#define _KOT_WINDOW_INTERFACE_
 
 #include <memory>
 #include <Events.hpp>
