@@ -3,14 +3,14 @@
 
 #include <Vulkan.hpp>
 
-class IX11Vulkan : public __IVkInterface
+class IX11Vulkan : public IVulkan
 {
 private:
     void CreateSurface();
     void DestroySurface();
 
 public:
-    IX11Vulkan(const __IVkInterface::Attributes& _Attributes);
+    IX11Vulkan(const IVulkan::Attributes& _Attributes);
     virtual ~IX11Vulkan() override;
 
     virtual vk::SurfaceKHR* GetKHRSurface() override;

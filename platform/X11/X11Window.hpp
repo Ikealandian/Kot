@@ -3,14 +3,14 @@
 
 #include "Window.hpp"
 
-class IX11Window : public __IWinInterface
+class IX11Window : public IWindow
 {
 private:
     void CreateWindow();
     void DestroyWindow();
 
 public:
-    IX11Window(const __IWinInterface::Attributes&);
+    IX11Window(const IWindow::Attributes&);
     virtual ~IX11Window() override;
     
     virtual unsigned GetPlatform() const override;

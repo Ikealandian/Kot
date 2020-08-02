@@ -238,7 +238,7 @@ int                             X11Input::LastCX,
 
 struct __IWinImpl
 {
-    __IWinInterface::Attributes _Attributes;
+    IWindow::Attributes _Attributes;
     DisplayScreen _Display;
 
     std::stack<IEvent> EventStack;
@@ -276,10 +276,10 @@ void IX11Window::CreateWindow()
     DpyScr->Height = XDisplayHeight(_wImpl->xDisplay, _wImpl->iScreen);
 
     // Flags
-    __IWinInterface::Attributes* Attribs = &_wImpl->_Attributes;
+    IWindow::Attributes* Attribs = &_wImpl->_Attributes;
 
     // Window Centered
-    if (_wImpl->_Attributes.aFlags & __IWinInterface::Flags::PositionCentered)
+    if (_wImpl->_Attributes.aFlags & IWindow::Flags::PositionCentered)
     {
         Attribs->X = (DpyScr->Width / 2)  - (Attribs->Width / 2); 
         Attribs->Y = (DpyScr->Height / 2) - (Attribs->Height / 2);
@@ -340,7 +340,7 @@ void IX11Window::DestroyWindow()
     XCloseDisplay(_wImpl->xDisplay);
 }
 
-IX11Window::IX11Window(const __IWinInterface::Attributes& _Attributes)
+IX11Window::IX11Window(const IWindow::Attributes& _Attributes)
 {
     _wImpl = new __IWinImpl;
     _wImpl->_Attributes = _Attributes;
