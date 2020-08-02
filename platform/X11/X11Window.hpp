@@ -1,5 +1,5 @@
-#ifndef _KOT_LINUX_WINDOW_INTERFACE_
-#define _KOT_LINUX_WINDOW_INTERFACE_
+#ifndef _KOT_X11_WINDOW_INTERFACE_
+#define _KOT_X11_WINDOW_INTERFACE_
 
 #include "Window.hpp"
 
