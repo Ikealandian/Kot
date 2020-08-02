@@ -353,11 +353,10 @@ IX11Window::~IX11Window()
     delete _wImpl;
 }
 
-IWindow::Platform IX11Window::GetPlatform() const
+unsigned IX11Window::GetPlatform() const
 {
     // Linux Or Mach
-    // Default: Linux
-    return IWindow::Platform::Linux;
+    return IWindow::Platform::Linux | IWindow::Platform::Mach;
 }
 
 DisplayScreen* IX11Window::GetDisplayData() const

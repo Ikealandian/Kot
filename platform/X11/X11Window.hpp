@@ -13,7 +13,7 @@ public:
     IX11Window(const __IWinInterface::Attributes&);
     virtual ~IX11Window() override;
     
-    virtual Platform GetPlatform() const override;
+    virtual unsigned GetPlatform() const override;
     virtual DisplayScreen* GetDisplayData() const override;
     
     virtual void* SetNativeData(void* _Data) override;

@@ -20,7 +20,7 @@ typedef class __IWinInterface
 {
 public:
     // OS Platform
-    enum class Platform
+    enum Platform : unsigned
     {
         Linux,
         Windows,
@@ -49,7 +49,7 @@ protected:
 public:
     virtual ~__IWinInterface() = default;
 
-    virtual Platform GetPlatform() const = 0;
+    virtual unsigned GetPlatform() const = 0;
     virtual DisplayScreen* GetDisplayData() const = 0;
     
     virtual void* SetNativeData(void* _Data) = 0;
