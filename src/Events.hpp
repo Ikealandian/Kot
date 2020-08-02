@@ -22,7 +22,7 @@ enum class IEventType
     CharEvent,      // Character Input Event
 };
 
-struct IEventPMoved
+struct IEventPointerMoved
 {
     int PointerX, PointerY;
     int DeltaX, DeltaY;
@@ -47,10 +47,10 @@ struct IEvent
 
     union
     {
-        char32_t        eChar;
-        IEventKey       eKey;
-        IEventButton    eButton;
-        IEventPMoved    ePMoved;
+        char32_t            eChar;
+        IEventKey           eKey;
+        IEventButton        eButton;
+        IEventPointerMoved  ePMoved;
     };    
 };
 
