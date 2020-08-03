@@ -7,14 +7,14 @@ enum class IEventType
 {
     NoEvent,        // Unknown Event / No Event
 
-    WindowClosed,   // - No Event Struct
+    WindowClosed,   // - No Event Structs
     WindowResized,  // -  ~ No X11 Support
     WindowMoved,    // -  ~ No X11 Support
     WindowExposed,  // - 
 
-    PointerMoved,   //
-    PointerIn,      //
-    PointerOut,     //
+    PointerMoved,   // -
+    PointerIn,      // -
+    PointerOut,     // -
 
     KeyEvent,       // IEventKey
     ButtonEvent,    // IEventButton
