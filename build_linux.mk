@@ -3,6 +3,9 @@
 # mkbld -run
 #	./out/Linux.o
 
+# TODO
+# 	Build as library
+
 type = Executable
 output_directory = "out/"
 output_name = "Linux.o"
