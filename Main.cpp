@@ -57,8 +57,6 @@ int main()
 
     bool Running = true;
 
-    // TODO: Draw with Vulkan
-    // TODO: OpenGL Support
     while (Running)
     {
         X11Win->Update();
@@ -67,14 +65,6 @@ int main()
             IEvent Event = X11Win->Event();
             switch (Event.Type)
             {
-            case IEventType::PointerMoved:
-            {
-                //printf("Cursor Position:\nX: %d\nY: %d\n",
-                //    Event.ePMoved.PointerX,
-                //    Event.ePMoved.PointerY
-                //);
-                break;
-            }
             case IEventType::ButtonEvent:
             {
                 if (Event.eButton.Action == ButtonAction::Pressed)
