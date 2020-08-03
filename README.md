@@ -10,7 +10,7 @@ Cross-Platform C++ Window Creation
 
 # TODO List
   - Window
-    - Windows Window
+    - *~Windows Window
 
   - Vulkan
     - Windows Vulkan
