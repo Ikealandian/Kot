@@ -5,16 +5,25 @@
 #include <X11/Xlib.h>
 #include <vulkan/vulkan_xlib.h>
 
-IX11Vulkan::IX11Vulkan(IWindow* _Window)
+IX11Vulkan::IX11Vulkan(IWindow** _Window)
 {
     _vkImpl = new __IVkImpl;
-    _vkImpl->_pIWindow = _Window;
+    _vkImpl->_pIWindow = *_Window;
 }
 
 IX11Vulkan::~IX11Vulkan()
 {
     _vkImpl->_pIWindow = nullptr;
     delete _vkImpl;
+}
+
+std::vector<const char*> IX11Vulkan::GetRequiredExtentions() const
+{
+    return 
+    {
+        VK_KHR_SURFACE_EXTENSION_NAME,
+        VK_KHR_XLIB_SURFACE_EXTENSION_NAME
+    };
 }
 
 VkSurfaceKHR IX11Vulkan::CreateKHRSurface(const VkInstance& _VkInstance)

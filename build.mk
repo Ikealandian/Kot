@@ -1,5 +1,5 @@
 # mkbld -f build.mk -c g++
-# 	g++ -Wall -Wextra -fsanitize=leak -I src/ -I platform/ -L/usr/X11R6/lib -lX11 src/Window.cpp platform/X11/X11Window.cpp Main.cpp -o out/Linux.o
+# 	g++ -Wall -Wextra -fsanitize=leak -I src/ -I platform/ -L/usr/X11R6/lib -lX11 -L/usr/vulkan/lib -lvulkan src/Window.cpp src/Vulkan.cpp platform/X11/X11Window.cpp platform/X11/X11Vulkan.cpp Main.cpp -o out/Linux.o
 # mkbld -run
 #	./out/Linux.o
 
@@ -23,15 +23,19 @@ source_files =
 {
 	"Main.cpp",
 	"src/Window.cpp",
-	"plaform/X11/X11Window.cpp"
+	"src/Vulkan.cpp",
+	"platform/X11/X11Window.cpp",
+	"platform/X11/X11Vulkan.cpp"
 }
 
 library_directories = 
 {
-	"/usr/X11R6/lib"
+	"/usr/X11R6/lib",
+	"/usr/vulkan/lib"
 }
 
 library_files = 
 {
-	"X11"
+	"X11",
+	"vulkan"
 }

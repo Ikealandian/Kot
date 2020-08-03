@@ -11,9 +11,10 @@ struct __IVkImpl
 class IX11Vulkan : public IVulkan
 {
 public:
-    IX11Vulkan(IWindow* _Window);
+    IX11Vulkan(IWindow** _Window);
     virtual ~IX11Vulkan() override;
 
+    virtual std::vector<const char*> GetRequiredExtentions() const override;
     virtual VkSurfaceKHR CreateKHRSurface(const VkInstance& _VkInstance) override;
 };
 

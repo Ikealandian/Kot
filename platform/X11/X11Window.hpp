@@ -3,6 +3,18 @@
 
 #include "Window.hpp"
 
+#include "Events.hpp"
+
+#include <string.h>
+#include <stdio.h>
+#include <vector>
+#include <stack>
+#include <map>
+
+#include <X11/X.h>
+#include <X11/Xlib.h>
+#include <X11/XKBlib.h>
+
 struct __IWinImpl
 {
     IWindow::Attributes _Attributes;

@@ -1,8 +1,10 @@
 #ifndef _KOT_VULKAN_INTERFACE_
 #define _KOT_VULKAN_INTERFACE_
 
-#include <vulkan/vulkan.h>
 #include "Window.hpp"
+
+#include <vector>
+#include <vulkan/vulkan.h>
 
 typedef class __IVkInterface
 {
@@ -13,10 +15,12 @@ protected:
 
 public:
     virtual ~__IVkInterface() = default;
+
+    virtual std::vector<const char*> GetRequiredExtentions() const = 0;
     virtual VkSurfaceKHR CreateKHRSurface(const VkInstance& _VkInstance) = 0;
 
 public:
-    static __IVkInterface* Create(IWindow* _Window);
+    static __IVkInterface* Create(IWindow** _Window);
 
 }IVulkan;
 
