@@ -235,23 +235,6 @@ std::vector<unsigned int>       X11Input::X11KeyTable;
 std::vector<Keys>               X11Input::KeyTable;
 int                             X11Input::LastCX,
                                 X11Input::LastCY;
-
-struct __IWinImpl
-{
-    IWindow::Attributes _Attributes;
-    DisplayScreen _Display;
-
-    std::stack<IEvent> EventStack;
-
-    Display* xDisplay;
-    Window xWindow;
-    Window xRoot;
-    XEvent xEvent;
-    int iScreen;
-
-    Atom WMDeleteWindow;
-};
-
 // Results:
 //  0x1 xOpenDisplayError;
 

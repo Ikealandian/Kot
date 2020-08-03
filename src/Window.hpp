@@ -42,6 +42,10 @@ public:
     }Attributes;
 
 protected:
+    // Friends
+    friend class IX11Vulkan;
+    friend class IWinVulkan;
+
     // Platform Implementation
     struct __IWinImpl* _wImpl;
     unsigned _wResult;

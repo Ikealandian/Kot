@@ -3,6 +3,22 @@
 
 #include "Window.hpp"
 
+struct __IWinImpl
+{
+    IWindow::Attributes _Attributes;
+    DisplayScreen _Display;
+
+    std::stack<IEvent> EventStack;
+
+    Display* xDisplay;
+    Window xWindow;
+    Window xRoot;
+    XEvent xEvent;
+    int iScreen;
+
+    Atom WMDeleteWindow;
+};
+
 class IX11Window : public IWindow
 {
 private:

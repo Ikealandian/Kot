@@ -1,20 +1,20 @@
 #ifndef _KOT_X11_VULKAN_INTERFACE_
 #define _KOT_X11_VULKAN_INTERFACE_
 
-#include <Vulkan.hpp>
+#include "Vulkan.hpp"
+
+struct __IVkImpl
+{
+    IWindow* _pIWindow;
+};
 
 class IX11Vulkan : public IVulkan
 {
-private:
-    void CreateSurface();
-    void DestroySurface();
-
 public:
-    IX11Vulkan(const IVulkan::Attributes& _Attributes);
+    IX11Vulkan(IWindow* _Window);
     virtual ~IX11Vulkan() override;
 
-    virtual vk::SurfaceKHR* GetKHRSurface() override;
-
+    virtual VkSurfaceKHR CreateKHRSurface(const VkInstance& _VkInstance) override;
 };
 
 #endif
