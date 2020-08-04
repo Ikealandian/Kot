@@ -18,6 +18,8 @@ protected:
 public:
     virtual ~__IGLInterface() = default;
 
+    virtual void MakeContextCurrent();
+
 public:
     static __IGLInterface* Create(IWindow** _Window);
 
