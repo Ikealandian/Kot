@@ -6,6 +6,8 @@
 # TODO
 # 	Build as library
 
+# NevaMasq Build File
+
 type = Executable
 output_directory = "out/"
 output_name = "Linux.o"
