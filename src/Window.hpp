@@ -31,6 +31,7 @@ public:
     enum Flags : unsigned
     {
         PositionCentered        = (1 << 0),
+        NoResizing              = (1 << 1)
     };
 
     // Window Attributes
