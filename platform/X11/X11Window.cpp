@@ -247,18 +247,8 @@ void IX11Window::CreateWindow()
     DpyScr->Width = XDisplayWidth(_wImpl->xDisplay, _wImpl->iScreen);
     DpyScr->Height = XDisplayHeight(_wImpl->xDisplay, _wImpl->iScreen);
 
-    // Flags
+    // Impl Attributes
     IWindow::Attributes* Attribs = &_wImpl->_Attributes;
-
-    // Window Centered
-    if (_wImpl->_Attributes.aFlags & IWindow::Flags::PositionCentered)
-    {
-        Attribs->X = (DpyScr->Width / 2)  - (Attribs->Width / 2); 
-        Attribs->Y = (DpyScr->Height / 2) - (Attribs->Height / 2);
-    }
-
-    // printf("Display Size:\nW: %d\nH: %d\n", DpyScr->Width, DpyScr->Height);
-    // printf("Window Position:\nX: %d\nY: %d\n", Attribs->X, Attribs->Y);
 
     // Create Window
     _wImpl->xWindow = XCreateSimpleWindow(
@@ -298,6 +288,34 @@ void IX11Window::CreateWindow()
         ButtonMotionMask
     );
     XMapWindow(_wImpl->xDisplay, _wImpl->xWindow);
+
+    // Flags
+
+    // Window Centered
+    if (Attribs->aFlags & IWindow::Flags::PositionCentered)
+    {
+        Attribs->X = (DpyScr->Width / 2)  - (Attribs->Width / 2); 
+        Attribs->Y = (DpyScr->Height / 2) - (Attribs->Height / 2);
+    }
+
+    // No Window Resizing
+    if (Attribs->aFlags & IWindow::Flags::NoResizing)
+    {
+        XSizeHints* XHint;
+        XHint = XAllocSizeHints();
+        XHint->flags = PMinSize | PMaxSize;
+        
+        XWindowAttributes XWinAttribs;
+        XGetWindowAttributes(_wImpl->xDisplay,_wImpl->xWindow, &XWinAttribs);
+
+        XHint->min_width = XWinAttribs.width;
+        XHint->max_width = XWinAttribs.width;
+        XHint->min_height = XWinAttribs.height;
+        XHint->max_height = XWinAttribs.height;
+
+        XSetWMNormalHints(_wImpl->xDisplay, _wImpl->xWindow, XHint);
+        XFree(XHint);
+    }
 
     // Set Window Position
     XMoveWindow(
