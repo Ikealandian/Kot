@@ -8,7 +8,7 @@ int main()
     IWindow::Attributes Attribs;
     Attribs.Width = 800;
     Attribs.Height = 600;
-    Attribs.aFlags = IWindow::Flags::PositionCentered;
+    Attribs.aFlags = IWindow::Flags::PositionCentered | IWindow::Flags::NoResizing;
 
     IWindow* X11Win = IWindow::Create(Attribs);
     IVulkan* X11Vk  = IVulkan::Create(&X11Win);
