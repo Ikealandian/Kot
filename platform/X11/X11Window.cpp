@@ -294,8 +294,17 @@ void IX11Window::CreateWindow()
     // Window Centered
     if (Attribs->aFlags & IWindow::Flags::PositionCentered)
     {
+        // *Centers All Screens
+        //  I think
+
         Attribs->X = (DpyScr->Width / 2)  - (Attribs->Width / 2); 
         Attribs->Y = (DpyScr->Height / 2) - (Attribs->Height / 2);
+
+        // Set Window Position
+        XMoveWindow(
+            _wImpl->xDisplay, _wImpl->xWindow,
+            Attribs->X, Attribs->Y
+        );
     }
 
     // No Window Resizing
@@ -316,12 +325,6 @@ void IX11Window::CreateWindow()
         XSetWMNormalHints(_wImpl->xDisplay, _wImpl->xWindow, XHint);
         XFree(XHint);
     }
-
-    // Set Window Position
-    XMoveWindow(
-        _wImpl->xDisplay, _wImpl->xWindow,
-        Attribs->X, Attribs->Y
-    );
 }
 
 void IX11Window::DestroyWindow()
