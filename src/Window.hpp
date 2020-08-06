@@ -60,7 +60,7 @@ public:
     virtual void* SetNativeData(void* _Data) = 0;
     virtual void* GetNativeData() const = 0;
 
-    virtual IEvent Event() const = 0;
+    virtual WEvent Event() const = 0;
     virtual bool IsEvent() const = 0;
 
     virtual void Update() = 0;

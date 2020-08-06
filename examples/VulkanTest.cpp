@@ -62,10 +62,10 @@ int main()
         X11Win->Update();
         while (X11Win->IsEvent())
         {
-            IEvent Event = X11Win->Event();
+            WEvent Event = X11Win->Event();
             switch (Event.Type)
             {
-            case IEventType::ButtonEvent:
+            case WEventType::ButtonEvent:
             {
                 if (Event.eButton.Action == ButtonAction::Pressed)
                     printf("Button Pressed: %d\nLocation:\nX: %d\nY: %d\n",
@@ -75,16 +75,16 @@ int main()
                     );
                 break;
             }
-            case IEventType::CharEvent:
+            case WEventType::CharEvent:
                 printf("%c : %d\n", Event.eChar, Event.eChar);
                 break;
-            case IEventType::KeyEvent:
+            case WEventType::KeyEvent:
             {
                 if (Event.eKey.Code == Keys::Escape)
                     Running = false;
                 break;
             }
-            case IEventType::WindowClosed:
+            case WEventType::WindowClosed:
                 // Break Loop
                 Running = false;
                 break;
