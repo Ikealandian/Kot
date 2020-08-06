@@ -3,7 +3,7 @@
 
 #include <InputCodes.hpp>
 
-enum class IEventType
+enum class WEventType
 {
     NoEvent,        // Unknown Event / No Event
 
@@ -22,35 +22,35 @@ enum class IEventType
     CharEvent,      // Character Input Event
 };
 
-struct IEventPointerMoved
+struct WEventPointerMoved
 {
     int PointerX, PointerY;
     int DeltaX, DeltaY;
 };
 
-struct IEventKey
+struct WEventKey
 {
     Keys Code;
     KeyAction Action;
 };
 
-struct IEventButton
+struct WEventButton
 {
     Buttons Code;
     ButtonAction Action;
     int PointerX, PointerY;
 };
 
-struct IEvent
+struct WEvent
 {
-    IEventType Type;
+    WEventType Type;
 
     union
     {
         char32_t            eChar;
-        IEventKey           eKey;
-        IEventButton        eButton;
-        IEventPointerMoved  ePMoved;
+        WEventKey           eKey;
+        WEventButton        eButton;
+        WEventPointerMoved  ePMoved;
     };    
 };
 
