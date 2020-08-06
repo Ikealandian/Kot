@@ -23,7 +23,7 @@ struct __IWinImpl
     IWindow::Attributes _Attributes;
     DisplayScreen _Display;
 
-    std::stack<IEvent> EventStack;
+    std::stack<WEvent> EventStack;
 
     Display* xDisplay;
     Window xWindow;
@@ -50,7 +50,7 @@ public:
     virtual void* SetNativeData(void* _Data) override;
     virtual void* GetNativeData() const override;
 
-    virtual IEvent Event() const override;
+    virtual WEvent Event() const override;
     virtual bool IsEvent() const override;
 
     virtual void Update() override;

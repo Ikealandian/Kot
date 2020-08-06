@@ -360,9 +360,9 @@ DisplayScreen* IX11Window::GetDisplayData() const
 void* IX11Window::SetNativeData(void* _Data) { return _Data; }
 void* IX11Window::GetNativeData() const      { return nullptr; }
 
-IEvent IX11Window::Event() const
+WEvent IX11Window::Event() const
 {
-    IEvent Event = _wImpl->EventStack.top();
+    WEvent Event = _wImpl->EventStack.top();
     _wImpl->EventStack.pop();
     return Event;
 }
@@ -393,8 +393,8 @@ void IX11Window::Update()
         case EnterNotify:
         case LeaveNotify:
         {
-            IEvent PointerNotify;
-            PointerNotify.Type = Type == EnterNotify ? IEventType::PointerIn : IEventType::PointerOut;
+            WEvent PointerNotify;
+            PointerNotify.Type = Type == EnterNotify ? WEventType::PointerIn : WEventType::PointerOut;
 
             _wImpl->EventStack.push(PointerNotify);
             break;
@@ -403,8 +403,8 @@ void IX11Window::Update()
         // Window Exposed
         case Expose:
         {
-            IEvent ExposeEvent;
-            ExposeEvent.Type = IEventType::WindowExposed;
+            WEvent ExposeEvent;
+            ExposeEvent.Type = WEventType::WindowExposed;
 
             _wImpl->EventStack.push(ExposeEvent);
             break;
@@ -414,8 +414,8 @@ void IX11Window::Update()
         case ButtonPress:
         case ButtonRelease:
         {
-            IEvent ButtonEvent;
-            ButtonEvent.Type           = IEventType::ButtonEvent;
+            WEvent ButtonEvent;
+            ButtonEvent.Type           = WEventType::ButtonEvent;
             ButtonEvent.eButton.Action = Type == ButtonPress ? ButtonAction::Pressed : ButtonAction::Released;
 
             switch (Event->xbutton.button)
@@ -451,8 +451,8 @@ void IX11Window::Update()
         // Mouse Moved
         case MotionNotify:
         {
-            IEvent PMovedEvent;
-            PMovedEvent.Type = IEventType::PointerMoved;
+            WEvent PMovedEvent;
+            PMovedEvent.Type = WEventType::PointerMoved;
             
             std::pair<int, int> CursorPosition = 
             {
@@ -481,8 +481,8 @@ void IX11Window::Update()
             Xutf8LookupString(X11Input::IC, &Event->xkey, utf8, 4, &xKeySym, &xStatus);
 
             // Char Event
-            IEvent CharEvent;
-            CharEvent.Type          = IEventType::CharEvent;
+            WEvent CharEvent;
+            CharEvent.Type          = WEventType::CharEvent;
             CharEvent.eChar         = X11Input::UTF82C32(utf8);
 
             _wImpl->EventStack.push(CharEvent);
@@ -490,8 +490,8 @@ void IX11Window::Update()
         case KeyRelease:
         {
             // Key Event
-            IEvent KeyEvent;
-            KeyEvent.Type           = IEventType::KeyEvent;
+            WEvent KeyEvent;
+            KeyEvent.Type           = WEventType::KeyEvent;
             KeyEvent.eKey.Code      = X11Input::FromX11Key(Event->xkey.keycode);
             KeyEvent.eKey.Action    = Type == KeyPress ? KeyAction::Pressed : KeyAction::Released;
 
@@ -505,8 +505,8 @@ void IX11Window::Update()
             XClientMessageEvent* Message = &Event->xclient;
             if (static_cast<Atom>(Message->data.l[0]) == _wImpl->WMDeleteWindow)
             {
-                IEvent CloseEvent;
-                CloseEvent.Type = IEventType::WindowClosed;
+                WEvent CloseEvent;
+                CloseEvent.Type = WEventType::WindowClosed;
 
                 _wImpl->EventStack.push(CloseEvent);
             }
