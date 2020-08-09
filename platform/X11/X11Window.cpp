@@ -216,7 +216,7 @@ typedef struct __X11InputMapping
     }
 }X11Input;
 
-// Statix X11Input
+// Static X11Input Variables
 XIC                             X11Input::IC;
 XIM                             X11Input::IM;
 std::map<const char*, Keys>     X11Input::X11InputMap;
@@ -349,6 +349,7 @@ IX11Window::~IX11Window()
 unsigned IX11Window::GetPlatform() const
 {
     // Linux Or Mach
+    // TODO: Find Platform
     return IWindow::Platform::Linux | IWindow::Platform::Mach;
 }
 
@@ -388,7 +389,6 @@ void IX11Window::Update()
         //  Controller Input
         switch (Type)
         {
-        
         // Pointer In Out
         case EnterNotify:
         case LeaveNotify:
@@ -513,8 +513,21 @@ void IX11Window::Update()
             break;
         }
 
-        default:
-            break;
+        default: break;
         }
+    }
+
+    // Window Resized
+
+    if (true)
+    {
+        WEvent ResizedEvent;
+    }
+
+    // Window Moved
+
+    if (true)
+    {
+        WEvent MovedEvent;
     }
 }

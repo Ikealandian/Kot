@@ -8,18 +8,28 @@ enum class WEventType
     NoEvent,        // Unknown Event / No Event
 
     WindowClosed,   // - No Event Structs
-    WindowResized,  // -  ~ No X11 Support
-    WindowMoved,    // -  ~ No X11 Support
     WindowExposed,  // - 
+    WindowResized,  // WEventResized
+    WindowMoved,    // WEventMoved
 
     PointerMoved,   // -
     PointerIn,      // -
     PointerOut,     // -
 
-    KeyEvent,       // IEventKey
-    ButtonEvent,    // IEventButton
+    KeyEvent,       // WEventKey
+    ButtonEvent,    // WEventButton
 
     CharEvent,      // Character Input Event
+};
+
+struct WEventMoved
+{
+    int X, Y;
+};
+
+struct WEventResized
+{
+    int W, H;
 };
 
 struct WEventPointerMoved
@@ -41,6 +51,7 @@ struct WEventButton
     int PointerX, PointerY;
 };
 
+// Is Inefficient?
 struct WEvent
 {
     WEventType Type;
@@ -51,6 +62,8 @@ struct WEvent
         WEventKey           eKey;
         WEventButton        eButton;
         WEventPointerMoved  ePMoved;
+        WEventMoved         eWMoved;
+        WEventResized       eWResized;
     };    
 };
 

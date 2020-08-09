@@ -2,10 +2,6 @@
 Cross-Platform C++ Window Creation
 
 # Issues
-  - Missing X11 Support for following events:
-    - WindowResized
-    - WindowMoved
-    
   - Vulkan example causes memory leaks
 
 # TODO List
