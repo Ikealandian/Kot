@@ -7,6 +7,8 @@
 #define _KOT_WINDOW_INTERFACE_
 
 #include <memory>
+
+#include <Style.hpp>
 #include <Events.hpp>
 
 // Current Display/Screen Data
@@ -67,7 +69,7 @@ public:
 
 public:
     // Create Window for current plaform
-    static __IWinInterface* Create(const __IWinInterface::Attributes& _Attributes);
+    static __IWinInterface* Create(const Attributes& _Attributes);
 
 }IWindow;
 
