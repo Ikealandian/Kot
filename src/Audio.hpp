@@ -1,5 +1,5 @@
-#ifndef _KOT_WINDOW_AUDIO_
-#define _KOT_WINDOW_AUDIO_
+#ifndef _KOT_AUDIO_
+#define _KOT_AUDIO_
 
 using Sound = unsigned;
 class Player;
