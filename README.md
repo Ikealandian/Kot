@@ -1,4 +1,4 @@
-# Kot
+# Kross-platform Open-source Toolkit
 Cross-Platform C++ Window Creation
 
 # Issues
