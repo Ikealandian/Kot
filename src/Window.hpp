@@ -8,7 +8,6 @@
 
 #include <memory>
 
-#include <Style.hpp>
 #include <Events.hpp>
 
 // Current Display/Screen Data
@@ -51,7 +50,6 @@ protected:
 
     // Platform Implementation
     struct __IWinImpl* _wImpl;
-    unsigned _wResult;
 
 public:
     virtual ~__IWinInterface() = default;
