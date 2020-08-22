@@ -11,7 +11,6 @@ typedef class __IVkInterface
 protected:
     // Platform Implementation
     struct __IVkImpl* _vkImpl;
-    unsigned _vkResult;
 
 public:
     virtual ~__IVkInterface() = default;

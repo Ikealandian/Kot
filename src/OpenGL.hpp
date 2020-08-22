@@ -13,7 +13,6 @@ typedef class __IGLInterface
 protected:
     // Platform Implementation
     struct __IVkImpl* _glImpl;
-    unsigned _glResult;
 
 public:
     virtual ~__IGLInterface() = default;
