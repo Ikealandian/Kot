@@ -234,7 +234,6 @@ void IX11Window::CreateWindow()
     if (_wImpl->xDisplay == nullptr)
     {
         fputs("IWindow [IX11Window]: XOpenDisplay Failed...", stderr);
-        _wResult = 0x1;
         return;
     }
     
