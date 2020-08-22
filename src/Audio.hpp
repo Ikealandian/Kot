@@ -22,7 +22,7 @@ typedef struct __IPlayerSoundData
 
 typedef class __IPlayerInterface
 {
-private:
+protected:
     struct __IPlayerImpl* _plyrImpl;
 
 public:
