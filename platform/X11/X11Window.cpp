@@ -519,15 +519,15 @@ void IX11Window::Update()
 
     // Window Resized
 
-    if (true)
-    {
-        WEvent ResizedEvent;
-    }
+    // if (true)
+    // {
+    //     WEvent ResizedEvent;
+    // }
 
     // Window Moved
 
-    if (true)
-    {
-        WEvent MovedEvent;
-    }
+    // if (true)
+    // {
+    //     WEvent MovedEvent;
+    // }
 }
