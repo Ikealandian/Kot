@@ -1,11 +1,42 @@
 #ifndef _KOT_AUDIO_
 #define _KOT_AUDIO_
 
-using Sound = unsigned;
-class Player;
+#include <Window.hpp>
 
-// Sound Effect = Player::Load("Effect.mp3");
-// Player.PlaySound(Effect);
-// Player.StopSound(Effect);
+// IPlayer* Player = IPlayer::Create(&Window);
+// Sound Effect = Player->Load("Effect.mp3");
+// Player.Play(Effect);
+// Player.Stop(Effect);
+
+using Sound = unsigned;
+
+typedef struct __IPlayerLoadData
+{
+}SoundLoadData;
+
+typedef struct __IPlayerSoundData
+{
+    float Volume;
+    float Speed;
+}SoundData;
+
+typedef class __IPlayerInterface
+{
+private:
+    struct __IPlayerImpl* _plyrImpl;
+
+public:
+    virtual ~__IPlayerInterface() = default;
+
+    virtual Sound Load(const char* _File) = 0;
+    virtual Sound Load(const char* _File, const SoundLoadData& _SLD) = 0;
+
+    virtual void Play(const Sound& _Sound) = 0;
+    virtual void Play(const Sound& _Sound, const SoundData& _SD) = 0;
+
+public:
+    static __IPlayerInterface* Create(IWindow** _Window);
+
+}IPlayer;
 
 #endif
