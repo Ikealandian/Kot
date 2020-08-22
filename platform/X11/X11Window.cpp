@@ -224,8 +224,6 @@ std::vector<unsigned int>       X11Input::X11KeyTable;
 std::vector<Keys>               X11Input::KeyTable;
 int                             X11Input::LastCX,
                                 X11Input::LastCY;
-// Results:
-//  0x1 xOpenDisplayError;
 
 void IX11Window::CreateWindow()
 {
