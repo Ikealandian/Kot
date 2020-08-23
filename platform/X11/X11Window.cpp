@@ -24,7 +24,7 @@ typedef struct __X11InputMapping
 
     static char32_t UTF82C32(char _utf8[4])
     {
-        char32_t char32;
+        char32_t char32 = 0;
         if ((_utf8[0] & 0x80) == 0x00)
                     char32 = _utf8[0];
         else if ((_utf8[0] & 0xE0) == 0xC0)
