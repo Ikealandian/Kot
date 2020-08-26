@@ -16,17 +16,17 @@ struct __IPlayerImpl
     Sound _thisSound;
 };
 
-class IX11Player : public IPlayer
+class ILinuxPlayer : public IPlayer
 {
 public:
-    IX11Player(IWindow** _Window);
-    virtual ~IX11Player() override;
+    ILinuxPlayer(IWindow** _Window);
+    virtual ~ILinuxPlayer() override;
 
     virtual Sound Load(const char* _File) override;
     virtual Sound Load(const char* _File, const SoundLoadData& _SLD) override;
 
     virtual void Play(const Sound& _Sound) override;
-    virtual void Play(const Sound& _Sound, const SoundData& _SD) override;
+    virtual void Play(const Sound& _Sound, const SoundPlayBack& _SD) override;
 };
 
 #endif
