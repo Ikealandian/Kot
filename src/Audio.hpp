@@ -18,7 +18,7 @@ typedef struct __IPlayerSoundData
 {
     float Volume;
     float Speed;
-}SoundData;
+}SoundPlayBack;
 
 typedef class __IPlayerInterface
 {
@@ -32,7 +32,7 @@ public:
     virtual Sound Load(const char* _File, const SoundLoadData& _SLD) = 0;
 
     virtual void Play(const Sound& _Sound) = 0;
-    virtual void Play(const Sound& _Sound, const SoundData& _SD) = 0;
+    virtual void Play(const Sound& _Sound, const SoundPlayBack& _SD) = 0;
 
 public:
     static __IPlayerInterface* Create(IWindow** _Window);
