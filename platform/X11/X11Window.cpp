@@ -11,13 +11,13 @@ typedef struct __X11InputMapping
 
     static int LastCX, LastCY;
 
-    static void SaveCursorInfo(const std::pair<int, int>& _Cursor)
+    static void SaveCursorInfo(const ptt_t& _Cursor)
     {
         LastCX = _Cursor.first;
         LastCY = _Cursor.second;
     }   
 
-    static std::pair<int, int> GetCursorDelta(const std::pair<int, int>& _Cursor)
+    static ptt_t GetCursorDelta(const ptt_t& _Cursor)
     {
         return { LastCX - _Cursor.first, LastCY - _Cursor.second };
     }
@@ -80,16 +80,6 @@ typedef struct __X11InputMapping
     static void Init(Display** _xdis, Window* _xwin)
     {
         X11InputMap = {
-            { "AE01", Keys::Num1 },
-            { "AE02", Keys::Num2 },
-            { "AE03", Keys::Num3 },
-            { "AE04", Keys::Num4 },
-            { "AE05", Keys::Num5 },
-            { "AE06", Keys::Num6 },
-            { "AE07", Keys::Num7 },
-            { "AE08", Keys::Num8 },
-            { "AE09", Keys::Num9 },
-            { "AE10", Keys::Num0 },
             { "AD01", Keys::Q },
             { "AD02", Keys::W },
             { "AD03", Keys::E },
@@ -116,13 +106,7 @@ typedef struct __X11InputMapping
             { "AB05", Keys::B },
             { "AB06", Keys::N },
             { "AB07", Keys::M },
-            // { "AC10", Keys::Semicolon },
-            // { "AC11", Keys::Apostrophe },
-            // { "AD11", Keys::LBracket },
-            // { "AD12", Keys::RBracket },
-            // { "AB08", Keys::Comma },
-            // { "AB09", Keys::Period },
-            // { "AB10", Keys::Slash },
+            { "SPCE", Keys::Space },
             { "ESC",  Keys::Escape },
             { "FK01", Keys::F1 },
             { "FK02", Keys::F2 },
@@ -136,13 +120,22 @@ typedef struct __X11InputMapping
             { "FK10", Keys::F10 },
             { "FK11", Keys::F11 },
             { "FK12", Keys::F12 },
+            { "AE01", Keys::Num1 },
+            { "AE02", Keys::Num2 },
+            { "AE03", Keys::Num3 },
+            { "AE04", Keys::Num4 },
+            { "AE05", Keys::Num5 },
+            { "AE06", Keys::Num6 },
+            { "AE07", Keys::Num7 },
+            { "AE08", Keys::Num8 },
+            { "AE09", Keys::Num9 },
+            { "AE10", Keys::Num0 },
             { "PRSC", Keys::PrintScreen },
             { "SCLK", Keys::ScrollLock },
             { "PAUS", Keys::Pause},
             { "TLDE", Keys::Tilde },
             { "BKSP", Keys::Backspace },
             { "TAB",  Keys::Tab },
-            // { "BKSL", Keys::Backslash },
             { "CAPS", Keys::Caps },
             { "RTRN", Keys::Return },
             { "LFSH", Keys::LShift },
@@ -153,35 +146,17 @@ typedef struct __X11InputMapping
             { "RWIN", Keys::RMeta },
             { "LALT", Keys::LAlt },
             { "RLAT", Keys::RAlt },
-            { "SPCE", Keys::Space },
             { "MENU", Keys::Menu },
             { "INS",  Keys::Insert },
             { "HOME", Keys::Home },
-            { "PGUP", Keys::PageUp },
             { "DELE", Keys::Delete },
             { "END",  Keys::End },
+            { "PGUP", Keys::PageUp },
             { "PGDN", Keys::PageDown },
             { "UP",   Keys::ArrowUp },
             { "LEFT", Keys::ArrowLeft },
             { "DOWN", Keys::ArrowDown },
             { "RGHT", Keys::ArrowRight },
-            // { "NMLK", Keys::NumLock },
-            // { "KPDV", Keys::Divide },
-            // { "KPMU", Keys::Multiply },
-            // { "KPSU", Keys::Subtract },
-            // { "KPAD", Keys::Add },
-            // { "KPEN", Keys::Enter },
-            // { "KPDL", Keys::Decimal },
-            // { "KP0",  Keys::Numpad0 },
-            // { "KP1",  Keys::Numpad1 },
-            // { "KP2",  Keys::Numpad2 },
-            // { "KP3",  Keys::Numpad3 },
-            // { "KP4",  Keys::Numpad4 },
-            // { "KP5",  Keys::Numpad5 },
-            // { "KP6",  Keys::Numpad6 },
-            // { "KP7",  Keys::Numpad7 },
-            // { "KP8",  Keys::Numpad8 },
-            // { "KP9",  Keys::Numpad9 },
         };
 
         InitKeyTables(_xdis);
@@ -284,6 +259,7 @@ void IX11Window::CreateWindow()
         ButtonReleaseMask           |
         ButtonMotionMask
     );
+
     XMapWindow(_wImpl->xDisplay, _wImpl->xWindow);
 
     // Flags
@@ -426,11 +402,16 @@ void IX11Window::Update()
             case Button3:   // RIGHT
                 ButtonEvent.eButton.Code = Buttons::Button_2;
                 break;
-            // TODO: 4 and 5 Dont Work
             case Button4:
-                ButtonEvent.eButton.Code = Buttons::Button_4;
+                ButtonEvent.eButton.Code = Buttons::ScrollUp;
                 break;
             case Button5:
+                ButtonEvent.eButton.Code = Buttons::ScrollDown;
+                break;
+            case 8:
+                ButtonEvent.eButton.Code = Buttons::Button_4;
+                break;
+            case 9:
                 ButtonEvent.eButton.Code = Buttons::Button_5;
                 break;
             default:
@@ -451,11 +432,11 @@ void IX11Window::Update()
             WEvent PMovedEvent;
             PMovedEvent.Type = WEventType::PointerMoved;
             
-            std::pair<int, int> CursorPosition = 
+            ptt_t CursorPosition = 
             {
                 Event->xmotion.x, Event->xmotion.y
             };
-            std::pair<int, int> CursorDelta = X11Input::GetCursorDelta(CursorPosition);
+            ptt_t CursorDelta = X11Input::GetCursorDelta(CursorPosition);
 
             PMovedEvent.ePMoved.PointerX = CursorPosition.first;
             PMovedEvent.ePMoved.PointerY = CursorPosition.second;
@@ -496,6 +477,22 @@ void IX11Window::Update()
             break;
         }
 
+        // Structure Notify
+        case ConfigureNotify:
+        {
+            WEvent ChangedEvent;
+            ChangedEvent.Type = WEventType::WindowChanged;
+
+            ChangedEvent.eWChanged.W = Event->xconfigure.width;
+            ChangedEvent.eWChanged.H = Event->xconfigure.height;
+
+            ChangedEvent.eWChanged.X = Event->xconfigure.x;
+            ChangedEvent.eWChanged.Y = Event->xconfigure.y;
+
+            _wImpl->EventStack.push(ChangedEvent);
+            break;
+        }
+
         // Client Messages
         case ClientMessage:
         {
@@ -513,18 +510,4 @@ void IX11Window::Update()
         default: break;
         }
     }
-
-    // Window Resized
-
-    // if (true)
-    // {
-    //     WEvent ResizedEvent;
-    // }
-
-    // Window Moved
-
-    // if (true)
-    // {
-    //     WEvent MovedEvent;
-    // }
 }
