@@ -8,7 +8,7 @@ int main()
     IWindow::Attributes Attribs;
     Attribs.Width = 800;
     Attribs.Height = 600;
-    Attribs.aFlags = IWindow::Flags::PositionCentered | IWindow::Flags::NoResizing;
+    Attribs.aFlags = IWindow::Flags::PositionCentered;
 
     IWindow* X11Win = IWindow::Create(Attribs);
     IVulkan* X11Vk  = IVulkan::Create(&X11Win);
@@ -65,6 +65,16 @@ int main()
             WEvent Event = X11Win->Event();
             switch (Event.Type)
             {
+            case WEventType::WindowChanged:
+            {
+                printf("Window Changed:\n Position:\n  X: %d\n  Y: %d\n Size:\n  W: %d\n  H: %d\n",
+                    Event.eWChanged.X,
+                    Event.eWChanged.Y,
+                    Event.eWChanged.W,
+                    Event.eWChanged.H
+                );
+                break;
+            }
             case WEventType::ButtonEvent:
             {
                 if (Event.eButton.Action == ButtonAction::Pressed)
