@@ -18,6 +18,8 @@
 #include <X11/extensions/Xinerama.h>
 #include <X11/XKBlib.h>
 
+#define ptt_t std::pair<int, int>
+
 struct __IWinImpl
 {
     IWindow::Attributes _Attributes;
