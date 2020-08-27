@@ -22,7 +22,10 @@ enum struct Buttons
     Button_2,
     Button_3,
     Button_4,
-    Button_5
+    Button_5,
+
+    ScrollUp,
+    ScrollDown
 };
 
 enum struct Keys
