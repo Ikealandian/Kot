@@ -9,8 +9,10 @@ enum class WEventType
 
     WindowClosed,   // - No Event Structs
     WindowExposed,  // - 
-    WindowResized,  // WEventResized
-    WindowMoved,    // WEventMoved
+
+    WindowChanged,  // WEventChanged: Resized, Moved
+        WindowResized = WindowChanged,
+        WindowMoved = WindowChanged,
 
     PointerMoved,   // -
     PointerIn,      // -
@@ -22,13 +24,9 @@ enum class WEventType
     CharEvent,      // Character Input Event
 };
 
-struct WEventMoved
+struct WEventChanged
 {
     int X, Y;
-};
-
-struct WEventResized
-{
     int W, H;
 };
 
@@ -62,8 +60,7 @@ struct WEvent
         WEventKey           eKey;
         WEventButton        eButton;
         WEventPointerMoved  ePMoved;
-        WEventMoved         eWMoved;
-        WEventResized       eWResized;
+        WEventChanged       eWChanged;
     };    
 };
 
