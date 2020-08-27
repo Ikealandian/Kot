@@ -10,8 +10,8 @@ int main()
     Attribs.Height = 600;
     Attribs.aFlags = IWindow::Flags::PositionCentered;
 
-    IWindow* X11Win = IWindow::Create(Attribs);
-    IVulkan* X11Vk  = IVulkan::Create(&X11Win);
+    IWindow* VkWin = IWindow::Create(Attribs);
+    IVulkan* Vk  = IVulkan::Create(&VkWin);
 
     VkApplicationInfo vkAppInfo             {};
     vkAppInfo.sType                         = VK_STRUCTURE_TYPE_APPLICATION_INFO;
@@ -22,7 +22,7 @@ int main()
     vkAppInfo.engineVersion                 = VK_MAKE_VERSION(0, 0, 0);
     vkAppInfo.apiVersion                    = VK_API_VERSION_1_2;
 
-    std::vector<const char*> vkiExtensions  = X11Vk->GetRequiredExtentions();
+    std::vector<const char*> vkiExtensions  = Vk->GetRequiredExtentions();
     std::vector<const char*> vkiLayers      = 
     {
         "VK_LAYER_KHRONOS_validation"
@@ -53,47 +53,18 @@ int main()
     for (const auto& vkExtension : vkExtensions)
         puts(vkExtension.extensionName);
 
-    VkSurfaceKHR vkSurface = X11Vk->CreateKHRSurface(vkInstance);
+    VkSurfaceKHR vkSurface = Vk->CreateKHRSurface(vkInstance);
 
     bool Running = true;
 
     while (Running)
     {
-        X11Win->Update();
-        while (X11Win->IsEvent())
+        VkWin->Update();
+        while (VkWin->IsEvent())
         {
-            WEvent Event = X11Win->Event();
+            WEvent Event = VkWin->Event();
             switch (Event.Type)
             {
-            case WEventType::WindowChanged:
-            {
-                printf("Window Changed:\n Position:\n  X: %d\n  Y: %d\n Size:\n  W: %d\n  H: %d\n",
-                    Event.eWChanged.X,
-                    Event.eWChanged.Y,
-                    Event.eWChanged.W,
-                    Event.eWChanged.H
-                );
-                break;
-            }
-            case WEventType::ButtonEvent:
-            {
-                if (Event.eButton.Action == ButtonAction::Pressed)
-                    printf("Button Pressed: %d\nLocation:\nX: %d\nY: %d\n",
-                        (int)Event.eButton.Code,
-                        Event.eButton.PointerX,
-                        Event.eButton.PointerY
-                    );
-                break;
-            }
-            case WEventType::CharEvent:
-                printf("%c : %d\n", Event.eChar, Event.eChar);
-                break;
-            case WEventType::KeyEvent:
-            {
-                if (Event.eKey.Code == Keys::Escape)
-                    Running = false;
-                break;
-            }
             case WEventType::WindowClosed:
                 // Break Loop
                 Running = false;
@@ -107,7 +78,7 @@ int main()
     vkDestroySurfaceKHR(vkInstance, vkSurface, nullptr);
     vkDestroyInstance(vkInstance, nullptr);
 
-    delete X11Vk;
-    delete X11Win;
+    delete Vk;
+    delete VkWin;
     return 0;
 }
