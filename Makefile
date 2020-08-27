@@ -15,13 +15,17 @@
 #	Windows
 
 LIB := out/libkot.a
+INC := -L out/ -lkot
 
-OUT := out/obj/
+OUT := out/
+OBJ := out/obj/
+
 SOURCE := src/
 PLATFORM := platform/
 
 PLATFORM_X11 := $(PLATFORM)X11/
 PLATFORM_LINUX := $(PLATFORM)Linux/
+EXAMPLES = examples/
 
 CXX := g++
 CXXFLAGS := -Wall -Wextra -I $(SOURCE) -I $(PLATFORM)
@@ -29,36 +33,46 @@ CXXLIBS := -L/usr/X11R6/lib -L/usr/vulkan/lib -lX11 -lvulkan
 
 # src/
 KOTSRC := $(wildcard $(SOURCE)*.cpp)
-KOTOBJS := $(KOTSRC:$(SOURCE)%.cpp=$(OUT)%.o)
+KOTOBJS := $(KOTSRC:$(SOURCE)%.cpp=$(OBJ)%.o)
 
 # platform/x11/
 X11SRC := $(wildcard $(PLATFORM_X11)*.cpp)
-X11OBJS := $(X11SRC:$(PLATFORM_X11)%.cpp=$(OUT)%.o)
+X11OBJS := $(X11SRC:$(PLATFORM_X11)%.cpp=$(OBJ)%.o)
 
 # platform/linux/
 LNXSRC := $(wildcard $(PLATFORM_LINUX)*.cpp)
-LNXOBJS := $(LNXSRC:$(PLATFORM_LINUX)%.cpp=$(OUT)%.o)
+LNXOBJS := $(LNXSRC:$(PLATFORM_LINUX)%.cpp=$(OBJ)%.o)
+
+# examples/
+EXMSRC := $(wildcard $(EXAMPLES)*.cpp)
+EXMOBJS := $(EXMSRC:$(EXAMPLES)%.cpp=$(OUT)%.o)
 
 # Setup, Build and Link
-all: setup_kot $(KOTOBJS) $(X11OBJS) $(LNXOBJS) link_kot
+all: $(OBJ) $(KOTOBJS) $(X11OBJS) $(LNXOBJS) $(LIB) $(EXMOBJS)
 
-setup_kot:
-	mkdir -p out/obj/
+# Make out/obj/ folders
+$(OBJ):
+	mkdir -p $(OBJ)
 
 # Build src/
-$(KOTOBJS): $(OUT)%.o: $(SOURCE)%.cpp
+$(KOTOBJS): $(OBJ)%.o: $(SOURCE)%.cpp
 	$(CXX) $(CXXFLAGS) $(CXXLIBS) -c $< -o $@
 
 # Build platform/x11/
-$(X11OBJS): $(OUT)%.o: $(PLATFORM_X11)%.cpp
+$(X11OBJS): $(OBJ)%.o: $(PLATFORM_X11)%.cpp
 	$(CXX) $(CXXFLAGS) $(CXXLIBS) -c $< -o $@
 
 # Build platform/linux/
-$(LNXOBJS): $(OUT)%.o: $(PLATFORM_LINUX)%.cpp
+$(LNXOBJS): $(OBJ)%.o: $(PLATFORM_LINUX)%.cpp
 	$(CXX) $(CXXFLAGS) $(CXXLIBS) -c $< -o $@
 
-link_kot: 
+# Link kotlib.a
+$(LIB):
 	ar rs $(LIB) $(KOTOBJS) $(X11OBJS) $(LNXOBJS)
 
+# Build examples/
+$(EXMOBJS): $(OUT)%.o: $(EXAMPLES)%.cpp
+	$(CXX) $(CXXFLAGS) $(CXXLIBS) $< $(INC) -o $@
+ 
 clean:
-	$(RM) $(LIB) $(KOTOBJS) $(X11OBJS) $(LNXOBJS) *.o
+	$(RM) $(LIB) $(KOTOBJS) $(X11OBJS) $(LNXOBJS) $(EXMOBJS) *.o
