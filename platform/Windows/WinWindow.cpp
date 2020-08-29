@@ -219,23 +219,28 @@ void IWinWindow::CreateWindow()
         nullptr, nullptr, _wImpl->Instance, this
     );
 
+    ShowWindow(_wImpl->Window, SW_SHOW);
+
     if (Attribs->aFlags & IWindow::Flags::PositionCentered)
     {        
-        HWND wParent = GetParent(_wImpl->Window);
+        HWND wParent = GetDesktopWindow();
 
         RECT wrParentSize;
+        RECT wrWindowSize;
         GetWindowRect(wParent, &wrParentSize);
+        GetWindowRect(_wImpl->Window, &wrWindowSize);
 
-        wrParentSize.bottom /= 2;
-        wrParentSize.right /= 2;
+        int nWidth = wrWindowSize.right - wrWindowSize.left;
+        int nHeight = wrWindowSize.bottom - wrWindowSize.top;
 
-        Attribs->X = wrParentSize.right - (Attribs->Width / 2);
-        Attribs->Y = wrParentSize.bottom - (Attribs->Width / 2);
+        int nX = ((wrParentSize.right - wrParentSize.left) - nWidth) / 2 + wrParentSize.left;
+        int nY = ((wrParentSize.bottom - wrParentSize.top) - nHeight) / 2 + wrParentSize.top;
 
-        MoveWindow(_wImpl->Window, Attribs->X, Attribs->Y, Attribs->Width, Attribs->Height, FALSE);
+        Attribs->X = nX;
+        Attribs->Y = nY;
+
+        MoveWindow(_wImpl->Window, Attribs->X, Attribs->Y, nWidth, nHeight, FALSE);
     }
-
-    ShowWindow(_wImpl->Window, SW_SHOW);
 }
 
 void IWinWindow::DestroyWindow()
