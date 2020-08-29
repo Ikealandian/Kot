@@ -1,11 +1,11 @@
 # Kross-platform Open-source Toolkit
 Cross-Platform C++ Window Creation
 
-Include Directories:
+- Include Directories:
     - src/
     - platform/
 
-Output Directories:
+- Output Directories:
     - out/
     - out/obj/
 
