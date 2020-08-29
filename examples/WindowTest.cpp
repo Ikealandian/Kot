@@ -13,6 +13,8 @@ int main()
 
 	IWindow* Window = IWindow::Create(Attribs);
 
+    Window->SetCursorMode(IWindow::CursorMode::Confined);
+
 	bool Running = true;
 
     while (Running)
