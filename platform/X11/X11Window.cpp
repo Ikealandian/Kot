@@ -24,25 +24,33 @@ typedef struct __X11Input
 
     static char32_t UTF82C32(char _utf8[4])
     {
-        char32_t char32 = 0;
+        char32_t Char32 = 0;
         if ((_utf8[0] & 0x80) == 0x00)
-                    char32 = _utf8[0];
+        {
+            Char32 = _utf8[0];
+        }
         else if ((_utf8[0] & 0xE0) == 0xC0)
-            char32 
+        {
+            Char32
                 = (_utf8[0] & 0x1F) << 6
                 | (_utf8[1] & 0x3F);
+        }
         else if ((_utf8[2] & 0xF0) == 0xE0)
-            char32 
+        {
+            Char32
                 = (_utf8[0] & 0x0F) << 12
                 | (_utf8[1] & 0x3F) << 6
                 | (_utf8[2] & 0x3F);
+        }
         else if ((_utf8[0] & 0xF8) == 0xF0)
-            char32 
+        {
+            Char32
                 = (_utf8[0] & 0x07) << 18
                 | (_utf8[1] & 0x3F) << 12
                 | (_utf8[2] & 0x3F) << 6
                 | (_utf8[3] & 0x3F);
-        return char32;
+        }
+        return Char32;
     }
 
     static void InitKeyTables(Display** _xdis)
