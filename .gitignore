@@ -1,2 +1,12 @@
 out/* 
 .vscode/*
+*.sln
+*.vcxproj
+*.filters
+*.user
+*.ipch
+*.opendb
+*.db-wal
+*.db-shm
+*.db
+.vs/Kot/v16/.suo
