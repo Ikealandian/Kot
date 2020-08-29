@@ -1,6 +1,6 @@
 #include "X11/X11Window.hpp"
 
-typedef struct __X11InputMapping
+typedef struct __X11Input
 {
     static std::map<const char*, Keys> X11InputMap;
     static std::vector<unsigned int> X11KeyTable;
