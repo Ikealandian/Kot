@@ -224,7 +224,7 @@ LRESULT IWinWindow::HandleMessage(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
     // ~ CharEvent
     //
     // ~ ScrollEvent
-    // 
+    //
     // WindowMinimized
     // WindowMaximized
     //
@@ -278,6 +278,12 @@ LRESULT IWinWindow::HandleMessage(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
         ScrollEvent.eScroll.AbsDelta = abs((float)Delta);
 
         _wImpl->EventStack.push(ScrollEvent);
+        break;
+    }
+
+    case WM_XBUTTONDOWN:
+    case WM_XBUTTONUP:
+    {
         break;
     }
 
@@ -337,6 +343,25 @@ LRESULT IWinWindow::HandleMessage(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
 
     // Window Changed Event
     case WM_SIZE:
+    {
+        if (wParam == SIZE_MINIMIZED)
+        {
+            WEvent MinimizedEvent;
+            MinimizedEvent.Type = WEventType::WindowMinimized;
+
+            _wImpl->EventStack.push(MinimizedEvent);
+            break;
+        }
+
+        if (wParam == SIZE_MAXIMIZED)
+        {
+            WEvent MaximizedEvent;
+            MaximizedEvent.Type = WEventType::WindowMaximized;
+
+            _wImpl->EventStack.push(MaximizedEvent);
+        }
+    }
+    [[fallthrough]];
     case WM_MOVE:
     {
         WEvent ChangedEvent;
@@ -345,8 +370,8 @@ LRESULT IWinWindow::HandleMessage(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
         RECT rTemp;
         GetWindowRect(_wImpl->Window, &rTemp);
 
-        ChangedEvent.eWChanged.W = rTemp.right;
-        ChangedEvent.eWChanged.H = rTemp.bottom;
+        ChangedEvent.eWChanged.W = rTemp.right - rTemp.left;
+        ChangedEvent.eWChanged.H = rTemp.bottom - rTemp.top;
 
         ChangedEvent.eWChanged.X = rTemp.left;
         ChangedEvent.eWChanged.Y = rTemp.top;
@@ -444,6 +469,9 @@ void IWinWindow::CreateWindow()
     IWindow::Attributes* Attribs = &_wImpl->_Attributes;
 
     DWORD dwStyle = WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX;
+
+    // WindowFullScreen
+    // WindowMaximized
 
     if (!(Attribs->aFlags & IWindow::Flags::NoResizing))
     {
