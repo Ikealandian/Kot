@@ -5,9 +5,6 @@ Cross-Platform C++ Window Creation
   - Vulkan example causes memory leaks
 
 # TODO List
-  - Platform
-    - Windows
-
   - Vulkan
     - Simple Triangle
     
