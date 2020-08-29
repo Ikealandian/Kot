@@ -468,10 +468,27 @@ void IWinWindow::CreateWindow()
 
     IWindow::Attributes* Attribs = &_wImpl->_Attributes;
 
-    DWORD dwStyle = WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX;
+    DWORD dwStyle = WS_VISIBLE;
 
-    // WindowFullScreen
-    // WindowMaximized
+    if (Attribs->aFlags & IWindow::Flags::WindowFullScreen)
+    {
+        HMONITOR hmon = MonitorFromPoint({ (LONG)Attribs->X, (LONG)Attribs->Y }, MONITOR_DEFAULTTOPRIMARY);
+        MONITORINFO mi = { sizeof(mi) };
+
+        if (GetMonitorInfo(hmon, &mi))
+        {
+            Attribs->X = mi.rcMonitor.left;
+            Attribs->Y = mi.rcMonitor.top;
+            Attribs->Width = mi.rcMonitor.right - mi.rcMonitor.left;
+            Attribs->Height = mi.rcMonitor.bottom - mi.rcMonitor.top;
+        }
+
+        dwStyle |= WS_POPUP;
+    }
+    else
+    {
+        dwStyle |= WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX;
+    }
 
     if (!(Attribs->aFlags & IWindow::Flags::NoResizing))
     {
@@ -479,15 +496,13 @@ void IWinWindow::CreateWindow()
     }
 
     _wImpl->Window = CreateWindowExA(
-        WS_EX_APPWINDOW | WS_EX_WINDOWEDGE,
+        WS_EX_TOPMOST,
         "KotWinWindow", _wImpl->_Attributes.Title,
         dwStyle,
         Attribs->X, Attribs->Y,
         Attribs->Width, Attribs->Height,
         nullptr, nullptr, _wImpl->Instance, this
     );
-
-    ShowWindow(_wImpl->Window, SW_SHOW);
 
     if (Attribs->aFlags & IWindow::Flags::PositionCentered)
     {        
@@ -508,6 +523,11 @@ void IWinWindow::CreateWindow()
         Attribs->Y = nY;
 
         MoveWindow(_wImpl->Window, Attribs->X, Attribs->Y, nWidth, nHeight, FALSE);
+    }
+
+    if (Attribs->aFlags & IWindow::Flags::WindowMaximized)
+    {
+        SendMessage(_wImpl->Window, WM_SYSCOMMAND, SC_MAXIMIZE, 0);
     }
 }
 
