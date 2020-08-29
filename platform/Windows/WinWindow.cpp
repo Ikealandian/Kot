@@ -5,8 +5,93 @@
 
 typedef struct __WinInput
 {
+    static std::map<LONG, Keys> WinInputMap;
     static int LastCX, LastCY;
     static bool InWindow;
+
+    static void Init()
+    {
+        WinInputMap = {
+            { 'Q', Keys::Q },
+            { 'W', Keys::W },
+            { 'E', Keys::E },
+            { 'R', Keys::R },
+            { 'T', Keys::T },
+            { 'Y', Keys::Y },
+            { 'U', Keys::U },
+            { 'I', Keys::I },
+            { 'O', Keys::O },
+            { 'P', Keys::P },
+            { 'A', Keys::A },
+            { 'S', Keys::S },
+            { 'D', Keys::D },
+            { 'F', Keys::F },
+            { 'G', Keys::G },
+            { 'H', Keys::H },
+            { 'J', Keys::J },
+            { 'K', Keys::K },
+            { 'L', Keys::L },
+            { 'Z', Keys::Z },
+            { 'X', Keys::X },
+            { 'C', Keys::C },
+            { 'V', Keys::V },
+            { 'B', Keys::B },
+            { 'N', Keys::N },
+            { 'M', Keys::M },
+            { VK_SPACE, Keys::Space },
+            { VK_ESCAPE, Keys::Escape },
+            { VK_F1, Keys::F1 },
+            { VK_F2, Keys::F2 },
+            { VK_F3, Keys::F3 },
+            { VK_F4, Keys::F4 },
+            { VK_F5, Keys::F5 },
+            { VK_F6, Keys::F6 },
+            { VK_F7, Keys::F7 },
+            { VK_F8, Keys::F8 },
+            { VK_F9, Keys::F9 },
+            { VK_F10, Keys::F10 },
+            { VK_F11, Keys::F11 },
+            { VK_F12, Keys::F12 },
+            { VK_NUMPAD1, Keys::Num1 },
+            { VK_NUMPAD2, Keys::Num2 },
+            { VK_NUMPAD3, Keys::Num3 },
+            { VK_NUMPAD4, Keys::Num4 },
+            { VK_NUMPAD5, Keys::Num5 },
+            { VK_NUMPAD6, Keys::Num6 },
+            { VK_NUMPAD7, Keys::Num7 },
+            { VK_NUMPAD8, Keys::Num8 },
+            { VK_NUMPAD9, Keys::Num9 },
+            { VK_NUMPAD0, Keys::Num0 },
+            { VK_SNAPSHOT, Keys::PrintScreen },
+            { VK_SCROLL, Keys::ScrollLock },
+            { VK_PAUSE, Keys::Pause},
+            { VK_OEM_3, Keys::Tilde },
+            { VK_BACK, Keys::Backspace },
+            { VK_TAB, Keys::Tab },
+            { VK_CAPITAL, Keys::Caps },
+            { VK_RETURN, Keys::Return },
+            { VK_LSHIFT, Keys::LShift },
+            { VK_RSHIFT, Keys::RShift },
+            { VK_LCONTROL, Keys::LControl },
+            { VK_RCONTROL, Keys::RControl },
+            { 0L, Keys::LMeta },
+            { 0L, Keys::RMeta },
+            { VK_MENU, Keys::LAlt },
+            { VK_RMENU, Keys::RAlt },
+            { 0L, Keys::Menu },
+            { VK_INSERT, Keys::Insert },
+            { VK_HOME, Keys::Home },
+            { VK_DELETE, Keys::Delete },
+            { VK_END, Keys::End },
+            { 0L, Keys::PageUp },
+            { 0L, Keys::PageDown },
+            { VK_UP, Keys::ArrowUp },
+            { VK_LEFT, Keys::ArrowLeft },
+            { VK_DOWN, Keys::ArrowDown },
+            { VK_RIGHT, Keys::ArrowRight },
+        };
+
+    }
 
     static void SaveCursorInfo(const ptt_t& _Cursor)
     {
@@ -19,12 +104,22 @@ typedef struct __WinInput
         return { LastCX - _Cursor.first, LastCY - _Cursor.second };
     }
 
+    static Keys FromVirtualKey(int Key)
+    {
+        if (WinInputMap.find(Key) == WinInputMap.end())
+            return Keys::NoKey;
+        return WinInputMap[Key];
+    }
+
 }WinInput;
 
-int WinInput::LastCX,
-    WinInput::LastCY;
+int     WinInput::LastCX,
+        WinInput::LastCY;
 
-bool WinInput::InWindow;
+std::map<LONG, Keys>
+         WinInput::WinInputMap;
+
+bool    WinInput::InWindow = false;
 
 LRESULT CALLBACK IWinWindow::SetupWinProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
@@ -64,18 +159,54 @@ LRESULT IWinWindow::HandleMessage(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
     // KeyEvent
     // ButtonEvent
     // 
-    // CharEvent
+    // ~ CharEvent
 
     switch (msg)
     {
 
     // Window Close Event
+    case WM_DESTROY:
     case WM_CLOSE:
     {                
         WEvent CloseEvent;
         CloseEvent.Type = WEventType::WindowClosed;
 
         _wImpl->EventStack.push(CloseEvent);
+        break;
+    }
+
+    case WM_CHAR:
+    {
+        WEvent CharEvent;
+        CharEvent.Type = WEventType::CharEvent;
+        CharEvent.eChar = wParam;
+
+        _wImpl->EventStack.push(CharEvent);
+        break;
+    }
+
+    case WM_MBUTTONDOWN:
+    case WM_RBUTTONDOWN:
+    case WM_LBUTTONDOWN:
+    {
+        break;
+    }
+
+    case WM_XBUTTONDOWN:
+    {
+        break;
+    }
+
+    case WM_KEYDOWN:
+    case WM_KEYUP:
+    {
+        // Key Event
+        WEvent KeyEvent;
+        KeyEvent.Type = WEventType::KeyEvent;
+        KeyEvent.eKey.Code = WinInput::FromVirtualKey(wParam);
+        KeyEvent.eKey.Action = msg == WM_KEYDOWN ? KeyAction::Pressed : KeyAction::Released;
+
+        _wImpl->EventStack.push(KeyEvent);
         break;
     }
 
@@ -116,22 +247,16 @@ LRESULT IWinWindow::HandleMessage(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
         break;
     }
 
-    case WM_MOUSELEAVE:
-    {
-        WinInput::InWindow = false;
-        WEvent PointerNotify;
-        PointerNotify.Type = WEventType::PointerOut;
-
-        _wImpl->EventStack.push(PointerNotify);
-        break;
-    }
-
+    // Pointer Moved
+    // Pointed In
+    // Pointer Out
+    // TODO: Use Client Region
     case WM_MOUSEMOVE:
     {
         const POINTS pt = MAKEPOINTS(lParam);
 
-        if (pt.x >= 0 && pt.x < _wImpl->_Attributes.Width
-            && pt.y >= 0 && pt.y < _wImpl->_Attributes.Height)
+        if (pt.x >= 0 && pt.x < static_cast<SHORT>(_wImpl->_Attributes.Width)
+            && pt.y >= 0 && pt.y < static_cast<SHORT>(_wImpl->_Attributes.Height))
         {
             WEvent PMovedEvent;
             PMovedEvent.Type = WEventType::PointerMoved;
@@ -165,6 +290,11 @@ LRESULT IWinWindow::HandleMessage(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
         }
         else
         {
+            WinInput::InWindow = false;
+            WEvent PointerNotify;
+            PointerNotify.Type = WEventType::PointerOut;
+
+            _wImpl->EventStack.push(PointerNotify);
             ReleaseCapture();
         }
         break;
@@ -178,6 +308,8 @@ LRESULT IWinWindow::HandleMessage(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
 
 void IWinWindow::CreateWindow()
 {
+    WinInput::Init();
+
 	_wImpl->Instance = GetModuleHandle(nullptr);
 
     WNDCLASSEX WndInfo;
@@ -230,11 +362,11 @@ void IWinWindow::CreateWindow()
         GetWindowRect(wParent, &wrParentSize);
         GetWindowRect(_wImpl->Window, &wrWindowSize);
 
-        int nWidth = wrWindowSize.right - wrWindowSize.left;
-        int nHeight = wrWindowSize.bottom - wrWindowSize.top;
+        unsigned int nWidth = wrWindowSize.right - wrWindowSize.left;
+        unsigned int nHeight = wrWindowSize.bottom - wrWindowSize.top;
 
-        int nX = ((wrParentSize.right - wrParentSize.left) - nWidth) / 2 + wrParentSize.left;
-        int nY = ((wrParentSize.bottom - wrParentSize.top) - nHeight) / 2 + wrParentSize.top;
+        unsigned int nX = ((wrParentSize.right - wrParentSize.left) - nWidth) / 2 + wrParentSize.left;
+        unsigned int nY = ((wrParentSize.bottom - wrParentSize.top) - nHeight) / 2 + wrParentSize.top;
 
         Attribs->X = nX;
         Attribs->Y = nY;
