@@ -29,8 +29,8 @@ int main()
                 break;
             case WEventType::ButtonEvent:
                 printf("Button: %d:%d\n X: %d\n Y: %d\n",
-                    Event.eButton.Code,
-                    Event.eButton.Action,
+                    (int)Event.eButton.Code,
+                    (int)Event.eButton.Action,
                     Event.eButton.PointerX,
                     Event.eButton.PointerY);
                 break;
