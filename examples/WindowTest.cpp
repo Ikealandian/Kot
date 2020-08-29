@@ -27,8 +27,12 @@ int main()
                 // Break Loop
                 Running = false;
                 break;
-            case WEventType::CharEvent:
-                putchar(Event.eChar);
+            case WEventType::ButtonEvent:
+                printf("Button: %d:%d\n X: %d\n Y: %d\n",
+                    Event.eButton.Code,
+                    Event.eButton.Action,
+                    Event.eButton.PointerX,
+                    Event.eButton.PointerY);
                 break;
             default:
                 break;
