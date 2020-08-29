@@ -42,7 +42,8 @@ public:
         PositionCentered        = (1 << 0),
         NoResizing              = (1 << 1),
         WindowFullScreen        = (1 << 2),
-        WindowMaximized         = (1 << 3)
+        WindowMaximized         = (1 << 3),
+        BorderlessWindow        = (1 << 4)
     };
 
     // Window Attributes
