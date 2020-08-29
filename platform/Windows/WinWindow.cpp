@@ -526,6 +526,24 @@ void IWinWindow::SetCursorMode(const CursorMode& _Cursor)
     }
 }
 
+void IWinWindow::SetCursorState(const CursorState& _Cursor)
+{
+    switch (_Cursor)
+    {
+    case CursorState::Shown:
+    {
+        while (ShowCursor(TRUE) < 0);
+        break;
+    }
+    case CursorState::Hidden:
+    {
+        while (ShowCursor(FALSE) >= 0);
+        break;
+    }
+    default: break;
+    }
+}
+
 unsigned IWinWindow::GetPlatform() const
 {
     return IWindow::Platform::Windows;
