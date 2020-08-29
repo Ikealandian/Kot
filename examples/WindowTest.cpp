@@ -50,6 +50,13 @@ int main()
                     ToggleCursorState(CState);
                 break;
             }
+            case WEventType::WindowChanged:
+                printf("Window Moved:\n X: %d\n Y: %d\n W: %d\n H: %d\n",
+                    Event.eWChanged.X,
+                    Event.eWChanged.Y,
+                    Event.eWChanged.W,
+                    Event.eWChanged.H);
+                break;
             case WEventType::ButtonEvent:
                 printf("Button: %d:%d\n X: %d\n Y: %d\n",
                     (int)Event.eButton.Code,
