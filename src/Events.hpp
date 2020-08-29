@@ -14,8 +14,8 @@ enum class WEventType
         WindowResized = WindowChanged,
         WindowMoved = WindowChanged,
 
-    WindowMinimized,      // -
-    WindowMaximized,      // -
+    WindowMinimized,// -
+    WindowMaximized,// -
 
     PointerMoved,   // WEventPointerMoved
     PointerIn,      // -
@@ -48,6 +48,8 @@ struct WEventKey
 
 struct WEventScroll
 {
+    int PointerX, PointerY;
+
     ScrollAxis Axis;
     float Delta;
     
