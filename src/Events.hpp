@@ -7,21 +7,25 @@ enum class WEventType
 {
     NoEvent,        // Unknown Event / No Event
 
-    WindowClosed,   // - No Event Structs
-    WindowExposed,  // - 
+    WindowClosed,   // -
+    WindowExposed,  // -
 
     WindowChanged,  // WEventChanged: Resized, Moved
         WindowResized = WindowChanged,
         WindowMoved = WindowChanged,
 
-    PointerMoved,   // -
+    Minimized,      // -
+    Maximized,      // -
+
+    PointerMoved,   // WEventPointerMoved
     PointerIn,      // -
     PointerOut,     // -
 
     KeyEvent,       // WEventKey
     ButtonEvent,    // WEventButton
+    ScrollEvent,    // WEventScroll
 
-    CharEvent,      // Character Input Event
+    CharEvent,      // Character Input Event (char32_t)
 };
 
 struct WEventChanged
@@ -42,6 +46,15 @@ struct WEventKey
     KeyAction Action;
 };
 
+struct WEventScroll
+{
+    ScrollAxis Axis;
+    float Delta;
+    
+    Scroll Direction;
+    float AbsDelta;
+};
+
 struct WEventButton
 {
     Buttons Code;
@@ -58,6 +71,7 @@ struct WEvent
     {
         char32_t            eChar;
         WEventKey           eKey;
+        WEventScroll        eScroll;
         WEventButton        eButton;
         WEventPointerMoved  ePMoved;
         WEventChanged       eWChanged;
