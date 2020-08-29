@@ -1,12 +1,5 @@
-// inc/Window.hpp
-
-// platform/X11/Window.hpp
-// platform/Windows/Window.hpp
-
 #ifndef _KOT_WINDOW_INTERFACE_
 #define _KOT_WINDOW_INTERFACE_
-
-#include <memory>
 
 #include <Events.hpp>
 
@@ -32,7 +25,9 @@ public:
     enum Flags : unsigned
     {
         PositionCentered        = (1 << 0),
-        NoResizing              = (1 << 1)
+        NoResizing              = (1 << 1),
+        WindowFullScreen        = (1 << 2),
+        WindowMaximized         = (1 << 3)
     };
 
     // Window Attributes
