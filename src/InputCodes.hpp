@@ -1,17 +1,39 @@
 #ifndef _KOT_KEYCODE_ENUMS_
 #define _KOT_KEYCODE_ENUMS_
 
-enum class ButtonAction
+enum struct ButtonAction
 {
+    NoAction = 0,
+
     Pressed,
     Released,
 };
 
-enum class KeyAction
+enum struct KeyAction
 {
+    NoAction = 0,
+
     Pressed,
     Released,
     Repeat
+};
+
+enum struct ScrollAxis
+{
+    NoAxis = 0,
+
+    ScrollVertical,
+    ScrollHorizontal
+};
+
+enum struct Scroll
+{
+    NoScroll = 0,
+
+    ScrollUp,
+    ScrollDown,
+    ScrollLeft,
+    ScrollRight
 };
 
 enum struct Buttons
