@@ -42,6 +42,8 @@ public:
     virtual unsigned GetPlatform() const override;
     virtual DisplayScreen* GetDisplayData() const override;
 
+    virtual void SetCursorMode(const CursorMode& _Cursor) override;
+
     virtual void* SetNativeData(void* _Data) override;
     virtual void* GetNativeData() const override;
 
