@@ -104,6 +104,41 @@ typedef struct __WinInput
         return { LastCX - _Cursor.first, LastCY - _Cursor.second };
     }
 
+    static ButtonAction ActionFromMessage(int Message)
+    {
+        switch (Message)
+        {
+        case WM_MBUTTONDOWN:
+        case WM_RBUTTONDOWN:
+        case WM_LBUTTONDOWN:
+            return ButtonAction::Pressed;
+        case WM_MBUTTONUP:
+        case WM_RBUTTONUP:
+        case WM_LBUTTONUP:
+            return ButtonAction::Released;
+        default: break;
+        }
+        return ButtonAction::NoAction;
+    }
+
+    static Buttons FromWinButton(int Button)
+    {
+        switch (Button)
+        {
+        case WM_LBUTTONDOWN:
+        case WM_LBUTTONUP:
+            return Buttons::Button_1;
+        case WM_RBUTTONDOWN:
+        case WM_RBUTTONUP:
+            return Buttons::Button_2;
+        case WM_MBUTTONDOWN:
+        case WM_MBUTTONUP:
+            return Buttons::Button_3;
+        default: break;
+        }
+        return Buttons::NoButton;
+    }
+
     static Keys FromVirtualKey(int Key)
     {
         if (WinInputMap.find(Key) == WinInputMap.end())
@@ -156,10 +191,12 @@ LRESULT IWinWindow::HandleMessage(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
     // ~ PointerIn
     // ~ PointerOut
     // 
-    // KeyEvent
-    // ButtonEvent
+    // ~ KeyEvent
+    // ~ ButtonEvent
     // 
     // ~ CharEvent
+
+    // TODO: XButton's
 
     switch (msg)
     {
@@ -188,12 +225,22 @@ LRESULT IWinWindow::HandleMessage(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
     case WM_MBUTTONDOWN:
     case WM_RBUTTONDOWN:
     case WM_LBUTTONDOWN:
+    case WM_MBUTTONUP:
+    case WM_RBUTTONUP:
+    case WM_LBUTTONUP:
     {
-        break;
-    }
+        const POINTS Point = MAKEPOINTS(lParam);
 
-    case WM_XBUTTONDOWN:
-    {
+        WEvent ButtonEvent;
+        ButtonEvent.Type = WEventType::ButtonEvent;
+
+        ButtonEvent.eButton.Action = WinInput::ActionFromMessage(msg);
+        ButtonEvent.eButton.Code = WinInput::FromWinButton(msg);
+
+        ButtonEvent.eButton.PointerX = Point.x;
+        ButtonEvent.eButton.PointerY = Point.y;
+
+        _wImpl->EventStack.push(ButtonEvent);
         break;
     }
 
@@ -253,17 +300,17 @@ LRESULT IWinWindow::HandleMessage(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
     // TODO: Use Client Region
     case WM_MOUSEMOVE:
     {
-        const POINTS pt = MAKEPOINTS(lParam);
+        const POINTS Point = MAKEPOINTS(lParam);
 
-        if (pt.x >= 0 && pt.x < static_cast<SHORT>(_wImpl->_Attributes.Width)
-            && pt.y >= 0 && pt.y < static_cast<SHORT>(_wImpl->_Attributes.Height))
+        if (Point.x >= 0 && Point.x < static_cast<SHORT>(_wImpl->_Attributes.Width)
+            && Point.y >= 0 && Point.y < static_cast<SHORT>(_wImpl->_Attributes.Height))
         {
             WEvent PMovedEvent;
             PMovedEvent.Type = WEventType::PointerMoved;
 
             ptt_t CursorPosition =
             {
-                pt.x, pt.y
+                Point.x, Point.y
             };
             ptt_t CursorDelta = WinInput::GetCursorDelta(CursorPosition);
 
