@@ -1,6 +1,20 @@
 #include <Window.hpp>
 #include <stdio.h>
 
+void ToggleCursorState(IWindow::CursorState& _State)
+{
+    switch (_State)
+    {
+    case IWindow::CursorState::Shown:
+        _State = IWindow::CursorState::Hidden;
+        break;
+    case IWindow::CursorState::Hidden:
+        _State = IWindow::CursorState::Shown;
+        break;
+    default: break;
+    }
+}
+
 int main()
 {
 	IWindow::Attributes Attribs;
@@ -13,12 +27,13 @@ int main()
 
 	IWindow* Window = IWindow::Create(Attribs);
 
-    Window->SetCursorMode(IWindow::CursorMode::Confined);
-
 	bool Running = true;
+    IWindow::CursorState CState = IWindow::CursorState::Shown;
 
     while (Running)
     {
+        Window->SetCursorState(CState);
+
         Window->Update();
         while (Window->IsEvent())
         {
@@ -29,6 +44,12 @@ int main()
                 // Break Loop
                 Running = false;
                 break;
+            case WEventType::KeyEvent:
+            {
+                if (Event.eKey.Code == Keys::Escape)
+                    ToggleCursorState(CState);
+                break;
+            }
             case WEventType::ButtonEvent:
                 printf("Button: %d:%d\n X: %d\n Y: %d\n",
                     (int)Event.eButton.Code,
