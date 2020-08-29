@@ -243,6 +243,9 @@ void IX11Window::CreateWindow()
         0x0                                     // Background Colour
     );
 
+    XStoreName(_wImpl->xDisplay, _wImpl->xWindow, Attribs->Title);
+    XSetIconName(_wImpl->xDisplay, _wImpl->xWindow, Attribs->Title);
+
     // Atoms
     _wImpl->WMDeleteWindow = XInternAtom(_wImpl->xDisplay, "WM_DELETE_WINDOW", False);
 
