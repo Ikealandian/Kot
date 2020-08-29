@@ -223,7 +223,7 @@ LRESULT IWinWindow::HandleMessage(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
     // 
     // ~ CharEvent
     //
-    // ScrollEvent
+    // ~ ScrollEvent
     // 
     // WindowMinimized
     // WindowMaximized
@@ -500,6 +500,30 @@ IWinWindow::~IWinWindow()
 {
     DestroyWindow();
     delete _wImpl;
+}
+
+void IWinWindow::SetCursorMode(const CursorMode& _Cursor)
+{
+    switch (_Cursor)
+    {
+    case CursorMode::Free:
+    {
+        ClipCursor(nullptr);
+        break;
+    }
+    case CursorMode::Confined:
+    {
+        RECT rect;
+        GetClientRect(_wImpl->Window , &rect);
+        MapWindowPoints(_wImpl->Window, nullptr, reinterpret_cast<POINT*>(&rect), 2);
+        ClipCursor(&rect);
+        printf("%d", GetLastError());
+        break;
+    }
+    case CursorMode::Locked:
+        break;
+    default: break;
+    }
 }
 
 unsigned IWinWindow::GetPlatform() const
