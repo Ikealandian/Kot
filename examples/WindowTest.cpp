@@ -23,7 +23,7 @@ int main()
     Attribs.Y = 0;
 	Attribs.Width = 800;
 	Attribs.Height = 600;
-	Attribs.aFlags = IWindow::Flags::PositionCentered;
+	Attribs.aFlags = IWindow::Flags::WindowMaximized;
 
 	IWindow* Window = IWindow::Create(Attribs);
 
