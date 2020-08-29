@@ -1,4 +1,5 @@
 #include "X11/X11Window.hpp"
+#include <cmath>
 
 typedef struct __X11Input
 {
@@ -230,6 +231,9 @@ void IX11Window::CreateWindow()
     // Impl Attributes
     IWindow::Attributes* Attribs = &_wImpl->_Attributes;
 
+    // FullscreenWindow
+    // MaximizeWindow
+
     // Create Window
     _wImpl->xWindow = XCreateSimpleWindow(
         _wImpl->xDisplay, _wImpl->xRoot,        // Display, Parent Window
@@ -338,6 +342,16 @@ DisplayScreen* IX11Window::GetDisplayData() const
 {
     return &_wImpl->_Display;
 }
+
+void IX11Window::SetCursorMode(const CursorMode& _Cursor)
+{
+
+}
+
+void IX11Window::SetCursorState(const CursorState& _Cursor)
+{
+
+}
     
 void* IX11Window::SetNativeData(void* _Data) { return _Data; }
 void* IX11Window::GetNativeData() const      { return nullptr; }
@@ -368,6 +382,10 @@ void IX11Window::Update()
         // Later:
         // TODO:
         //  Controller Input
+
+        // WindowMinimized
+        // WindowMaximized
+
         switch (Type)
         {
         // Pointer In Out
@@ -397,7 +415,6 @@ void IX11Window::Update()
         {
             WEvent ButtonEvent;
             ButtonEvent.Type           = WEventType::ButtonEvent;
-            ButtonEvent.eButton.Action = Type == ButtonPress ? ButtonAction::Pressed : ButtonAction::Released;
 
             switch (Event->xbutton.button)
             {
@@ -410,12 +427,34 @@ void IX11Window::Update()
             case Button3:   // RIGHT
                 ButtonEvent.eButton.Code = Buttons::Button_2;
                 break;
-            case Button4:
-                ButtonEvent.eButton.Code = Buttons::ScrollUp;
+
+            // Scroll
+            case Button4: // Up
+                ButtonEvent.Type = WEventType::ScrollEvent;
+                ButtonEvent.eScroll.Delta = 120.0f;
+                ButtonEvent.eScroll.Axis = ScrollAxis::ScrollVertical;
+                ButtonEvent.eScroll.Direction = Scroll::ScrollUp;
                 break;
-            case Button5:
-                ButtonEvent.eButton.Code = Buttons::ScrollDown;
+            case Button5: // Down
+                ButtonEvent.Type = WEventType::ScrollEvent;
+                ButtonEvent.eScroll.Delta = -120.0f;
+                ButtonEvent.eScroll.Axis = ScrollAxis::ScrollVertical;
+                ButtonEvent.eScroll.Direction = Scroll::ScrollDown;
                 break;
+            case 6: // Left
+                ButtonEvent.Type = WEventType::ScrollEvent;
+                ButtonEvent.eScroll.Delta = -120.0f;
+                ButtonEvent.eScroll.Axis = ScrollAxis::ScrollHorizontal;
+                ButtonEvent.eScroll.Direction = Scroll::ScrollLeft;
+                break;
+            case 7: // Right
+                ButtonEvent.Type = WEventType::ScrollEvent;
+                ButtonEvent.eScroll.Delta = 120.0f;
+                ButtonEvent.eScroll.Axis = ScrollAxis::ScrollHorizontal;
+                ButtonEvent.eScroll.Direction = Scroll::ScrollRight;
+                break;
+
+            
             case 8:
                 ButtonEvent.eButton.Code = Buttons::Button_4;
                 break;
@@ -427,8 +466,20 @@ void IX11Window::Update()
                 break;
             }
 
-            ButtonEvent.eButton.PointerX = Event->xmotion.x;
-            ButtonEvent.eButton.PointerY = Event->xmotion.y;
+            if (ButtonEvent.Type != WEventType::ScrollEvent)
+            {
+                ButtonEvent.eButton.Action =
+                 Type == ButtonPress ? ButtonAction::Pressed : ButtonAction::Released;
+
+                ButtonEvent.eButton.PointerX = Event->xmotion.x;
+                ButtonEvent.eButton.PointerY = Event->xmotion.y;
+            }
+            else 
+            {
+                ButtonEvent.eScroll.AbsDelta = abs(ButtonEvent.eScroll.Delta);
+                ButtonEvent.eScroll.PointerX = Event->xmotion.x;
+                ButtonEvent.eScroll.PointerY = Event->xmotion.y;
+            }
 
             _wImpl->EventStack.push(ButtonEvent);
             break;
