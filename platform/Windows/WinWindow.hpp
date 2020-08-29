@@ -16,11 +16,11 @@
 
 struct __IWinImpl
 {
-    IWindow::Attributes _Attributes;
-    DisplayScreen _Display;
+    IWindow::Attributes _Attributes = {};
+    DisplayScreen _Display = {};
 
-    HWND Window;
-    HINSTANCE Instance;
+    HWND Window = nullptr;
+    HINSTANCE Instance = nullptr;
 
     std::stack<WEvent> EventStack;
 };
