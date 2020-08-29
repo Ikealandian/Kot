@@ -139,6 +139,32 @@ typedef struct __WinInput
         return Buttons::NoButton;
     }
 
+    static ScrollAxis GetScrollAxis(int Message)
+    {
+        switch (Message)
+        {
+        case WM_MOUSEHWHEEL:
+            return ScrollAxis::ScrollHorizontal;
+        case WM_MOUSEWHEEL:
+            return ScrollAxis::ScrollVertical;
+        default: break;
+        }
+        return ScrollAxis::NoAxis;
+    }
+
+    static Scroll GetScrollDirection(int Delta, ScrollAxis Axis)
+    {
+        switch (Axis)
+        {
+        case ScrollAxis::ScrollVertical:
+            return (Delta < 0 ? Scroll::ScrollDown : Scroll::ScrollUp);
+        case ScrollAxis::ScrollHorizontal:
+            return (Delta < 0 ? Scroll::ScrollLeft : Scroll::ScrollRight);
+        default: break;
+        }
+        return Scroll::NoScroll;
+    }
+
     static Keys FromVirtualKey(int Key)
     {
         if (WinInputMap.find(Key) == WinInputMap.end())
@@ -196,6 +222,8 @@ LRESULT IWinWindow::HandleMessage(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
     // 
     // ~ CharEvent
     //
+    // ScrollEvent
+    // 
     // WindowMinimized
     // WindowMaximized
     //
@@ -223,6 +251,28 @@ LRESULT IWinWindow::HandleMessage(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
         CharEvent.eChar = wParam;
 
         _wImpl->EventStack.push(CharEvent);
+        break;
+    }
+
+    case WM_MOUSEHWHEEL:
+    case WM_MOUSEWHEEL:
+    {
+        WEvent ScrollEvent;
+        ScrollEvent.Type = WEventType::ScrollEvent;
+
+        const POINTS Point = MAKEPOINTS(lParam);
+        const int Delta = GET_WHEEL_DELTA_WPARAM(wParam);
+
+        ScrollEvent.eScroll.PointerX = Point.x;
+        ScrollEvent.eScroll.PointerY = Point.y;
+
+        ScrollEvent.eScroll.Axis = WinInput::GetScrollAxis(msg);
+        ScrollEvent.eScroll.Direction = WinInput::GetScrollDirection(Delta, ScrollEvent.eScroll.Axis);
+
+        ScrollEvent.eScroll.Delta = (float)Delta;
+        ScrollEvent.eScroll.AbsDelta = abs((float)Delta);
+
+        _wImpl->EventStack.push(ScrollEvent);
         break;
     }
 
