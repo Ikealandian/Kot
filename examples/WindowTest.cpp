@@ -23,7 +23,7 @@ int main()
     Attribs.Y = 0;
 	Attribs.Width = 800;
 	Attribs.Height = 600;
-	Attribs.aFlags = IWindow::Flags::NoResizing | IWindow::Flags::PositionCentered;
+	Attribs.aFlags = IWindow::Flags::PositionCentered;
 
 	IWindow* Window = IWindow::Create(Attribs);
 
@@ -62,6 +62,12 @@ int main()
                     (int)Event.eScroll.Delta,
                     Event.eScroll.PointerX,
                     Event.eScroll.PointerY);
+                break;
+            case WEventType::WindowMinimized:
+                printf("Window Minimized\n");
+                break;
+            case WEventType::WindowMaximized:
+                printf("Window Maximized\n");
                 break;
             default:
                 break;
