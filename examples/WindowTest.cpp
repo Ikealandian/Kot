@@ -34,6 +34,12 @@ int main()
                     Event.eButton.PointerX,
                     Event.eButton.PointerY);
                 break;
+            case WEventType::ScrollEvent:
+                printf("Scroll: %d\n X: %d\n Y: %d\n",
+                    (int)Event.eScroll.Delta,
+                    Event.eScroll.PointerX,
+                    Event.eScroll.PointerY);
+                break;
             default:
                 break;
             }
