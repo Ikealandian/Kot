@@ -21,6 +21,14 @@ public:
         Mach,
     };
 
+    // Cursor Mode
+    enum struct CursorMode
+    {
+        Free,
+        Confined,
+        Locked
+    };
+
     // Window Flags
     enum Flags : unsigned
     {
@@ -53,6 +61,8 @@ public:
     virtual unsigned GetPlatform() const = 0;
     virtual DisplayScreen* GetDisplayData() const = 0;
     
+    virtual void SetCursorMode(const CursorMode& _Cursor) = 0;
+
     virtual void* SetNativeData(void* _Data) = 0;
     virtual void* GetNativeData() const = 0;
 
