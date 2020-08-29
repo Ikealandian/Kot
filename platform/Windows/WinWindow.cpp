@@ -195,6 +195,10 @@ LRESULT IWinWindow::HandleMessage(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
     // ~ ButtonEvent
     // 
     // ~ CharEvent
+    //
+    // WindowMinimized
+    // WindowMaximized
+    //
 
     // TODO: XButton's
 
@@ -245,7 +249,9 @@ LRESULT IWinWindow::HandleMessage(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
     }
 
     case WM_KEYDOWN:
+    case WM_SYSKEYDOWN:
     case WM_KEYUP:
+    case WM_SYSKEYUP:
     {
         // Key Event
         WEvent KeyEvent;
