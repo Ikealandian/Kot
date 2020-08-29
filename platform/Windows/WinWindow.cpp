@@ -1,3 +1,4 @@
+#include <windowsx.h>
 #include "WinWindow.hpp"
 
 #define ptt_t std::pair<int, int>
@@ -260,7 +261,11 @@ LRESULT IWinWindow::HandleMessage(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
         WEvent ScrollEvent;
         ScrollEvent.Type = WEventType::ScrollEvent;
 
-        const POINTS Point = MAKEPOINTS(lParam);
+        POINT Point;
+        Point.x = GET_X_LPARAM(lParam);
+        Point.y = GET_Y_LPARAM(lParam);
+        ScreenToClient(_wImpl->Window, &Point);
+        
         const int Delta = GET_WHEEL_DELTA_WPARAM(wParam);
 
         ScrollEvent.eScroll.PointerX = Point.x;
