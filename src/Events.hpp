@@ -14,8 +14,8 @@ enum class WEventType
         WindowResized = WindowChanged,
         WindowMoved = WindowChanged,
 
-    Minimized,      // -
-    Maximized,      // -
+    WindowMinimized,      // -
+    WindowMaximized,      // -
 
     PointerMoved,   // WEventPointerMoved
     PointerIn,      // -
