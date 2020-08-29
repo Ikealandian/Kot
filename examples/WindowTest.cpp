@@ -1,4 +1,5 @@
 #include <Window.hpp>
+#include <stdio.h>
 
 int main()
 {
@@ -25,6 +26,9 @@ int main()
             case WEventType::WindowClosed:
                 // Break Loop
                 Running = false;
+                break;
+            case WEventType::CharEvent:
+                putchar(Event.eChar);
                 break;
             default:
                 break;
