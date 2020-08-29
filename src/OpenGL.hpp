@@ -8,6 +8,7 @@
 //  https://www.khronos.org/opengl/wiki/Creating_an_OpenGL_Context_(WGL)
 
 // TODO: X11 OpenGL
+// TODO: Win OpenGL
 typedef class __IGLInterface
 {
 protected:

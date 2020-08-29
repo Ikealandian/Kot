@@ -6,6 +6,7 @@
 #include <vector>
 #include <vulkan/vulkan.h>
 
+// TODO: Win Vulkan
 typedef class __IVkInterface
 {
 protected:
