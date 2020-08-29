@@ -38,6 +38,7 @@ public:
     // Window Attributes
     typedef struct
     {
+        const char* Title;
         unsigned Width, Height;
         unsigned X, Y;
         unsigned aFlags;
