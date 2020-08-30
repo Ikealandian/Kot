@@ -34,6 +34,13 @@ struct __IWinImpl
     int iScreen;
 
     Atom WMDeleteWindow;
+    Atom WMState;
+    Atom WMNetState;
+    Atom WMNetStateFullscreen;
+    Atom WMNetStateHidden;
+    Atom WMNetActionMinimise;
+    Atom WMNetMaximizedVertical;
+    Atom WMNetMaximizedHorizontal;
 };
 
 class IX11Window : public IWindow
