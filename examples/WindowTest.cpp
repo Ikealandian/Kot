@@ -29,6 +29,7 @@ int main()
 
 	bool Running = true;
     IWindow::CursorState CState = IWindow::CursorState::Shown;
+    Window->SetCursorMode(IWindow::CursorMode::Confined);
 
     while (Running)
     {
