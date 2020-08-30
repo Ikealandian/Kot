@@ -17,6 +17,7 @@
 #include <X11/Xatom.h>
 #include <X11/extensions/Xinerama.h>
 #include <X11/XKBlib.h>
+#include <X11/cursorfont.h>
 
 #define ptt_t std::pair<int, int>
 
@@ -31,6 +32,7 @@ struct __IWinImpl
     Window xWindow;
     Window xRoot;
     XEvent xEvent;
+    Cursor xCursor;
     int iScreen;
 
     Atom WMDeleteWindow;

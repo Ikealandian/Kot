@@ -237,7 +237,7 @@ void IX11Window::CreateWindow()
         Attribs->X,     Attribs->Y,             // X, Y
         Attribs->Width, Attribs->Height,        // W, H
         0, 0,                                   // Border Size, Border Colour
-        0x0                                     // Background Colour
+        0xFFFF                                  // Background Colour
     );
 
     XStoreName(_wImpl->xDisplay, _wImpl->xWindow, Attribs->Title);
@@ -281,6 +281,9 @@ void IX11Window::CreateWindow()
     );
 
     XMapWindow(_wImpl->xDisplay, _wImpl->xWindow);
+
+    // Create Cursor
+    _wImpl->xCursor = XCreateFontCursor(_wImpl->xDisplay, XC_arrow);
 
     // Flags
 
@@ -396,6 +399,27 @@ void IX11Window::SetCursorMode(const CursorMode& _Cursor)
 {
     switch (_Cursor)
     {
+    case CursorMode::Free:
+    {
+        XUngrabPointer(_wImpl->xDisplay, CurrentTime);
+        break;
+    }
+    case CursorMode::Confined:
+    {
+        // Returning:
+        //  GrabNotViewable
+        printf("grab pointer result: %d\n%s",
+            XGrabPointer(
+                _wImpl->xDisplay, _wImpl->xWindow,
+                False, PointerMotionMask | ButtonPressMask | ButtonReleaseMask,
+                GrabModeAsync, GrabModeAsync, _wImpl->xWindow, _wImpl->xCursor, CurrentTime
+            )
+        );
+
+        break;
+    }
+    case CursorMode::Locked:
+        break;
     default: break;
     }
 }
@@ -426,6 +450,8 @@ bool IX11Window::IsEvent() const
 
 void IX11Window::Update()
 {
+    // Lock Cursor
+
     while (XPending(_wImpl->xDisplay))
     {
         XNextEvent(_wImpl->xDisplay, &_wImpl->xEvent);
@@ -460,7 +486,13 @@ void IX11Window::Update()
             WEvent ExposeEvent;
             ExposeEvent.Type = WEventType::WindowExposed;
 
+            static const char* SimpleText = "Hello, World!";
+
             _wImpl->EventStack.push(ExposeEvent);
+
+            XClearWindow(_wImpl->xDisplay, _wImpl->xWindow);
+            XDrawString(_wImpl->xDisplay, _wImpl->xWindow,
+             DefaultGC(_wImpl->xDisplay, _wImpl->iScreen), 10, 10, SimpleText, strlen(SimpleText));
             break;
         }
 
