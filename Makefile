@@ -47,6 +47,9 @@ LNXOBJS := $(LNXSRC:$(PLATFORM_LINUX)%.cpp=$(OBJ)%.o)
 EXMSRC := $(wildcard $(EXAMPLES)*.cpp)
 EXMOBJS := $(EXMSRC:$(EXAMPLES)%.cpp=$(OUT)%.o)
 
+# Do everything
+full: clean all
+
 # Setup, Build and Link
 all: $(OBJ) $(KOTOBJS) $(X11OBJS) $(LNXOBJS) $(LIB) $(EXMOBJS)
 
