@@ -23,7 +23,7 @@ int main()
     Attribs.Y = 0;
     Attribs.Width = 800;
     Attribs.Height = 600;
-    Attribs.aFlags = IWindow::Flags::WindowMaximized;
+    Attribs.aFlags = IWindow::Flags::BorderlessWindow | IWindow::Flags::NoResizing;
 
 	IWindow* Window = IWindow::Create(Attribs);
 
