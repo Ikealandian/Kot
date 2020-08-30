@@ -13,7 +13,14 @@ Cross-Platform C++ Window Creation
   - Vulkan example causes memory leaks
 
 # TODO List
+  - Clean up
+
+  - Events
+    - Event Handlers
+    - Input Devices
+
   - Platform
+    - Input Helpers
     - Wayland
 
   - Vulkan
