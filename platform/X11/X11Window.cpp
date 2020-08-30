@@ -231,9 +231,6 @@ void IX11Window::CreateWindow()
     // Impl Attributes
     IWindow::Attributes* Attribs = &_wImpl->_Attributes;
 
-    // FullscreenWindow
-    // MaximizeWindow
-
     // Create Window
     _wImpl->xWindow = XCreateSimpleWindow(
         _wImpl->xDisplay, _wImpl->xRoot,        // Display, Parent Window
@@ -247,7 +244,14 @@ void IX11Window::CreateWindow()
     XSetIconName(_wImpl->xDisplay, _wImpl->xWindow, Attribs->Title);
 
     // Atoms
+    _wImpl->WMState = XInternAtom(_wImpl->xDisplay, "WM_STATE", False);
+    _wImpl->WMNetState = XInternAtom(_wImpl->xDisplay, "_NET_WM_STATE", False);
+	_wImpl->WMNetStateFullscreen = XInternAtom(_wImpl->xDisplay, "_NET_WM_STATE_FULLSCREEN", False);
     _wImpl->WMDeleteWindow = XInternAtom(_wImpl->xDisplay, "WM_DELETE_WINDOW", False);
+    _wImpl->WMNetMaximizedVertical = XInternAtom(_wImpl->xDisplay, "_NET_WM_STATE_MAXIMIZED_VERT", False);
+    _wImpl->WMNetMaximizedHorizontal = XInternAtom(_wImpl->xDisplay, "_NET_WM_STATE_MAXIMIZED_HORZ", False);
+    _wImpl->WMNetStateHidden = XInternAtom(_wImpl->xDisplay, "_NET_WM_STATE_HIDDEN", False);
+    _wImpl->WMNetActionMinimise = XInternAtom(_wImpl->xDisplay, "_NET_WM_ACTION_MINIMIZE", False);
 
     // Override Protocols
     std::vector<Atom> WMProtocols = 
@@ -272,12 +276,49 @@ void IX11Window::CreateWindow()
         EnterWindowMask             |
         ButtonPressMask             |
         ButtonReleaseMask           |
-        ButtonMotionMask
+        ButtonMotionMask            |
+        PropertyChangeMask
     );
 
     XMapWindow(_wImpl->xDisplay, _wImpl->xWindow);
 
     // Flags
+
+    // Maximize Window
+    if (Attribs->aFlags & IWindow::Flags::WindowMaximized)
+    {
+        XEvent Event = {};
+
+        Event.type                  = ClientMessage;
+        Event.xclient.serial        = 0;
+        Event.xclient.send_event    = True;
+        Event.xclient.window        = _wImpl->xWindow;
+        Event.xclient.message_type  = _wImpl->WMNetState;
+        Event.xclient.format        = 32;
+        Event.xclient.data.l[0]     = 1;
+        Event.xclient.data.l[1]     = _wImpl->WMNetMaximizedHorizontal;
+        Event.xclient.data.l[2]     = _wImpl->WMNetMaximizedVertical;
+
+        XSendEvent(_wImpl->xDisplay, _wImpl->xRoot, False, SubstructureNotifyMask, &Event);
+    }
+
+    // Fullscreen Window
+    if (Attribs->aFlags & IWindow::Flags::WindowFullScreen)
+    {
+        XEvent Event = {};
+
+		Event.xclient.type			= ClientMessage;
+		Event.xclient.serial		= 0;
+		Event.xclient.send_event	= True;
+		Event.xclient.window		= _wImpl->xWindow;
+		Event.xclient.message_type  = _wImpl->WMNetState;
+		Event.xclient.format        = 32;
+		Event.xclient.data.l[0]     = 1;
+		Event.xclient.data.l[1]     = _wImpl->WMNetStateFullscreen;
+		Event.xclient.data.l[2]     = 0;
+
+		XSendEvent(_wImpl->xDisplay, _wImpl->xRoot, False, SubstructureRedirectMask | SubstructureNotifyMask, &Event);
+    }
 
     // Window Centered
     if (Attribs->aFlags & IWindow::Flags::PositionCentered)
@@ -313,6 +354,11 @@ void IX11Window::CreateWindow()
         XSetWMNormalHints(_wImpl->xDisplay, _wImpl->xWindow, XHint);
         XFree(XHint);
     }
+
+    WEvent CreateEvent;
+    CreateEvent.Type = WEventType::WindowCreated;
+
+    _wImpl->EventStack.push(CreateEvent);
 }
 
 void IX11Window::DestroyWindow()
@@ -348,12 +394,18 @@ DisplayScreen* IX11Window::GetDisplayData() const
 
 void IX11Window::SetCursorMode(const CursorMode& _Cursor)
 {
-
+    switch (_Cursor)
+    {
+    default: break;
+    }
 }
 
 void IX11Window::SetCursorState(const CursorState& _Cursor)
 {
-
+    switch (_Cursor)
+    {
+    default: break;
+    }
 }
     
 void* IX11Window::SetNativeData(void* _Data) { return _Data; }
@@ -555,10 +607,65 @@ void IX11Window::Update()
             break;
         }
 
+        case PropertyNotify:
+        {
+            XPropertyEvent* Property = &Event->xproperty;
+
+            if (Property->atom == _wImpl->WMNetState)
+            {
+                Atom            Type;
+                int             Format;
+                unsigned long   nAtoms,
+                                BytesAfter;
+                Atom*           Atoms = NULL;
+
+                XGetWindowProperty(
+                    _wImpl->xDisplay, _wImpl->xWindow,
+                    _wImpl->WMNetState,
+                    0, 1024, False, XA_ATOM,
+                    &Type, &Format, &nAtoms, &BytesAfter,
+                    (unsigned char**)&Atoms
+                );
+
+                WEvent TopEvent;
+                TopEvent.Type = WEventType::NoEvent;
+
+                if (!_wImpl->EventStack.empty())
+                {
+                    TopEvent = _wImpl->EventStack.top();
+                }
+
+                if ((Atoms[0] == _wImpl->WMNetStateHidden
+                  || Atoms[0] == _wImpl->WMNetActionMinimise)
+                  && TopEvent.Type != WEventType::WindowMinimized)
+                {
+                    WEvent MinimizeEvent;
+                    MinimizeEvent.Type = WEventType::WindowMinimized;
+                    _wImpl->EventStack.push(MinimizeEvent);
+                    break;
+                }
+
+                if ((Atoms[0] == _wImpl->WMNetMaximizedHorizontal
+                  || Atoms[0] == _wImpl->WMNetMaximizedVertical)
+                  && TopEvent.Type != WEventType::WindowMinimized)
+                {
+                    WEvent WindowMaximized;
+                    WindowMaximized.Type = WEventType::WindowMaximized;
+                    _wImpl->EventStack.push(WindowMaximized);
+                    break;
+                }
+                
+                XFree(Atoms);
+            }
+
+            break;
+        }
+
         // Client Messages
         case ClientMessage:
         {
             XClientMessageEvent* Message = &Event->xclient;
+            
             if (static_cast<Atom>(Message->data.l[0]) == _wImpl->WMDeleteWindow)
             {
                 WEvent CloseEvent;
@@ -566,6 +673,7 @@ void IX11Window::Update()
 
                 _wImpl->EventStack.push(CloseEvent);
             }
+
             break;
         }
 
