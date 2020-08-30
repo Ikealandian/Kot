@@ -17,13 +17,13 @@ void ToggleCursorState(IWindow::CursorState& _State)
 
 int main()
 {
-	IWindow::Attributes Attribs;
+    IWindow::Attributes Attribs;
     Attribs.Title = "Window Test";
     Attribs.X = 0;
     Attribs.Y = 0;
-	Attribs.Width = 800;
-	Attribs.Height = 600;
-	Attribs.aFlags = IWindow::Flags::WindowMaximized;
+    Attribs.Width = 800;
+    Attribs.Height = 600;
+    Attribs.aFlags = IWindow::Flags::WindowMaximized;
 
 	IWindow* Window = IWindow::Create(Attribs);
 
