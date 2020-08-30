@@ -7,6 +7,8 @@ enum class WEventType
 {
     NoEvent,        // Unknown Event / No Event
 
+    WindowCreated,  // -
+
     WindowClosed,   // -
     WindowExposed,  // -
 
