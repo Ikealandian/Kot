@@ -174,8 +174,6 @@ LRESULT IWinWindow::HandleMessage(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
 
 void IWinWindow::CreateWindow()
 {
-    WinInput::Init();
-
 	_wImpl->Instance = GetModuleHandle(nullptr);
 
     WNDCLASSEX WndInfo;
