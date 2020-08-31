@@ -32,14 +32,14 @@ enum class WEventType
 
 struct WEventWindowChanged
 {
-    int X, Y;
-    int Width, Height;
+    long X, Y;
+    long Width, Height;
 };
 
 struct WEventPointerMoved
 {
-    int PointerX, PointerY;
-    int DeltaX, DeltaY;
+    long PointerX, PointerY;
+    long DeltaX, DeltaY;
 };
 
 struct WEventKey
@@ -50,7 +50,7 @@ struct WEventKey
 
 struct WEventScroll
 {
-    int PointerX, PointerY;
+    long PointerX, PointerY;
 
     ScrollAxis Axis;
     float Delta;
@@ -63,7 +63,7 @@ struct WEventButton
 {
     Buttons Code;
     ButtonAction Action;
-    int PointerX, PointerY;
+    long PointerX, PointerY;
 };
 
 // Is Inefficient?
