@@ -32,7 +32,7 @@ void IX11Window::CreateWindow()
         Attribs->X,     Attribs->Y,             // X, Y
         Attribs->Width, Attribs->Height,        // W, H
         0, 0,                                   // Border Size, Border Colour
-        0xFFFF                                  // Background Colour
+        0x0                                     // Background Colour
     );
 
     XStoreName(_wImpl->xDisplay, _wImpl->xWindow, Attribs->Title);
