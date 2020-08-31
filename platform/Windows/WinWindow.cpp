@@ -112,17 +112,19 @@ typedef struct __WinInput
         case WM_MBUTTONDOWN:
         case WM_RBUTTONDOWN:
         case WM_LBUTTONDOWN:
+        case WM_XBUTTONDOWN:
             return ButtonAction::Pressed;
         case WM_MBUTTONUP:
         case WM_RBUTTONUP:
         case WM_LBUTTONUP:
+        case WM_XBUTTONUP:
             return ButtonAction::Released;
         default: break;
         }
         return ButtonAction::NoAction;
     }
 
-    static Buttons FromWinButton(int Button)
+    static Buttons FromWinButton(int Button, LPARAM wParam)
     {
         switch (Button)
         {
@@ -135,6 +137,20 @@ typedef struct __WinInput
         case WM_MBUTTONDOWN:
         case WM_MBUTTONUP:
             return Buttons::Button_3;
+        case WM_XBUTTONDOWN:
+        case WM_XBUTTONUP:
+        {
+            DWORD vkButton = GET_XBUTTON_WPARAM(wParam);
+            switch (vkButton)
+            {
+            case XBUTTON1:
+                return Buttons::Button_4;
+            case XBUTTON2:
+                return Buttons::Button_5;
+            default: break;
+            }
+            break;
+        }
         default: break;
         }
         return Buttons::NoButton;
@@ -281,18 +297,14 @@ LRESULT IWinWindow::HandleMessage(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
         break;
     }
 
-    case WM_XBUTTONDOWN:
-    case WM_XBUTTONUP:
-    {
-        break;
-    }
-
     case WM_MBUTTONDOWN:
     case WM_RBUTTONDOWN:
     case WM_LBUTTONDOWN:
+    case WM_XBUTTONDOWN:
     case WM_MBUTTONUP:
     case WM_RBUTTONUP:
     case WM_LBUTTONUP:
+    case WM_XBUTTONUP:
     {
         const POINTS Point = MAKEPOINTS(lParam);
 
@@ -300,7 +312,7 @@ LRESULT IWinWindow::HandleMessage(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
         ButtonEvent.Type = WEventType::ButtonEvent;
 
         ButtonEvent.eButton.Action = WinInput::ActionFromMessage(msg);
-        ButtonEvent.eButton.Code = WinInput::FromWinButton(msg);
+        ButtonEvent.eButton.Code = WinInput::FromWinButton(msg, wParam);
 
         ButtonEvent.eButton.PointerX = Point.x;
         ButtonEvent.eButton.PointerY = Point.y;
