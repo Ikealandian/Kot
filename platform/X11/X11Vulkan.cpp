@@ -1,5 +1,6 @@
-#include "X11/X11Vulkan.hpp"
-#include "X11/X11Window.hpp"
+#include "X11Vulkan.hpp"
+#include "X11Window.hpp"
+#include "X11Impl.hpp"
 
 #include <stdio.h>
 #include <X11/Xlib.h>
