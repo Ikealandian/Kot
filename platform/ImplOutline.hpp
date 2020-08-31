@@ -6,8 +6,8 @@
 
 typedef struct __WImplOutline
 {
-	IWindow::Attributes wAttribs;
-	DisplayScreen dScreen;
+	IWindow::Attributes wAttribs = {};
+	DisplayScreen dScreen = {};
 	EventStack eStack;
 }ImplOutline;
 
