@@ -30,10 +30,10 @@ enum class WEventType
     CharEvent,      // Character Input Event (char32_t)
 };
 
-struct WEventChanged
+struct WEventWindowChanged
 {
     int X, Y;
-    int W, H;
+    int Width, Height;
 };
 
 struct WEventPointerMoved
@@ -75,10 +75,10 @@ struct WEvent
     {
         char32_t            eChar;
         WEventKey           eKey;
-        WEventScroll        eScroll;
         WEventButton        eButton;
+        WEventScroll        eScroll;
         WEventPointerMoved  ePMoved;
-        WEventChanged       eWChanged;
+        WEventWindowChanged eWChanged;
     };    
 };
 
