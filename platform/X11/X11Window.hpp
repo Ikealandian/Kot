@@ -11,40 +11,6 @@
 #include <stack>
 #include <map>
 
-#include <X11/X.h>
-#include <X11/Xlib.h>
-#include <X11/Xutil.h>
-#include <X11/Xatom.h>
-#include <X11/extensions/Xinerama.h>
-#include <X11/XKBlib.h>
-#include <X11/cursorfont.h>
-
-#define ptt_t std::pair<int, int>
-
-struct __IWinImpl
-{
-    IWindow::Attributes _Attributes;
-    DisplayScreen _Display;
-
-    std::stack<WEvent> EventStack;
-
-    Display* xDisplay;
-    Window xWindow;
-    Window xRoot;
-    XEvent xEvent;
-    Cursor xCursor;
-    int iScreen;
-
-    Atom WMDeleteWindow;
-    Atom WMState;
-    Atom WMNetState;
-    Atom WMNetStateFullscreen;
-    Atom WMNetStateHidden;
-    Atom WMNetActionMinimise;
-    Atom WMNetMaximizedVertical;
-    Atom WMNetMaximizedHorizontal;
-};
-
 class IX11Window : public IWindow
 {
 private:
