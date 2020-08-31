@@ -82,7 +82,7 @@ void __UEventStack::PushKeyInputEvent(const Keys& _Key, const KeyAction& _Action
 
 void __UEventStack::PushButtonInputEvent(const Buttons& _Button, const ButtonAction& _Action, const long& _PointerX, const long& _PointerY)
 {
-	WEvent ButtonEvent = { WEventType::KeyEvent };
+	WEvent ButtonEvent = { WEventType::ButtonEvent };
 	ButtonEvent.eButton.Code = _Button;
 	ButtonEvent.eButton.Action = _Action;
 	ButtonEvent.eButton.PointerX = _PointerX;
