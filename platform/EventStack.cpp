@@ -1,4 +1,5 @@
 #include "EventStack.hpp"
+#include <cmath>
 
 __UEventStack::__UEventStack()
 	: eLast({ WEventType::NoEvent }),
