@@ -37,7 +37,7 @@ public:
 
 	void PushButtonInputEvent(
 		Buttons& _Button, ButtonAction& _Action,
-		int& _PointerX, int& PointerY
+		int& _PointerX, int& _PointerY
 	);
 
 	void PushMouseScrollEvent(
