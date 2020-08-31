@@ -1,213 +1,8 @@
-#include "X11/X11Window.hpp"
+#include "X11Impl.hpp"
+#include "X11Window.hpp"
+#include "X11Input.hpp"
+
 #include <cmath>
-
-typedef struct __X11Input
-{
-    static std::map<const char*, Keys> X11InputMap;
-    static std::vector<unsigned int> X11KeyTable;
-    static std::vector<Keys> KeyTable;
-
-    static XIC IC;
-    static XIM IM;
-
-    static int LastCX, LastCY;
-
-    static void SaveCursorInfo(const ptt_t& _Cursor)
-    {
-        LastCX = _Cursor.first;
-        LastCY = _Cursor.second;
-    }   
-
-    static ptt_t GetCursorDelta(const ptt_t& _Cursor)
-    {
-        return { LastCX - _Cursor.first, LastCY - _Cursor.second };
-    }
-
-    static char32_t UTF82C32(char _utf8[4])
-    {
-        char32_t Char32 = 0;
-        if ((_utf8[0] & 0x80) == 0x00)
-        {
-            Char32 = _utf8[0];
-        }
-        else if ((_utf8[0] & 0xE0) == 0xC0)
-        {
-            Char32
-                = (_utf8[0] & 0x1F) << 6
-                | (_utf8[1] & 0x3F);
-        }
-        else if ((_utf8[2] & 0xF0) == 0xE0)
-        {
-            Char32
-                = (_utf8[0] & 0x0F) << 12
-                | (_utf8[1] & 0x3F) << 6
-                | (_utf8[2] & 0x3F);
-        }
-        else if ((_utf8[0] & 0xF8) == 0xF0)
-        {
-            Char32
-                = (_utf8[0] & 0x07) << 18
-                | (_utf8[1] & 0x3F) << 12
-                | (_utf8[2] & 0x3F) << 6
-                | (_utf8[3] & 0x3F);
-        }
-        return Char32;
-    }
-
-    static void InitKeyTables(Display** _xdis)
-    {
-        XkbDescPtr pMapDesc = XkbGetMap(*_xdis, 0, XkbUseCoreKbd);
-        XkbGetNames(*_xdis, XkbKeyNamesMask, pMapDesc);
-
-        X11KeyTable.resize(pMapDesc->max_key_code + 1);
-        KeyTable.resize(pMapDesc->max_key_code + 1);
-
-        for (unsigned int X11Code = 0; X11Code <= pMapDesc->max_key_code; X11Code++) {
-            
-            bool Found = false;
-            for (auto it : X11InputMap) {
-                if (strncmp(it.first, pMapDesc->names->keys[X11Code].name, XkbKeyNameLength) == 0) {
-
-                    KeyTable[X11Code] = it.second;
-                    X11KeyTable[(std::size_t)it.second] = X11Code;
-                    
-                    Found = true;
-                    break;
-                }
-            }
-            
-            if (!Found)
-            {
-                KeyTable[X11Code] = Keys::NoKey;
-            }
-        }
-
-        XkbFreeNames(pMapDesc, XkbKeyNamesMask, True);
-        XkbFreeKeyboard(pMapDesc, 0, True);
-    }
-
-    static void Init(Display** _xdis, Window* _xwin)
-    {
-        X11InputMap = {
-            { "AD01", Keys::Q },
-            { "AD02", Keys::W },
-            { "AD03", Keys::E },
-            { "AD04", Keys::R },
-            { "AD05", Keys::T },
-            { "AD06", Keys::Y },
-            { "AD07", Keys::U },
-            { "AD08", Keys::I },
-            { "AD09", Keys::O },
-            { "AD10", Keys::P },
-            { "AC01", Keys::A },
-            { "AC02", Keys::S },
-            { "AC03", Keys::D },
-            { "AC04", Keys::F },
-            { "AC05", Keys::G },
-            { "AC06", Keys::H },
-            { "AC07", Keys::J },
-            { "AC08", Keys::K },
-            { "AC09", Keys::L },
-            { "AB01", Keys::Z },
-            { "AB02", Keys::X },
-            { "AB03", Keys::C },
-            { "AB04", Keys::V },
-            { "AB05", Keys::B },
-            { "AB06", Keys::N },
-            { "AB07", Keys::M },
-            { "SPCE", Keys::Space },
-            { "ESC",  Keys::Escape },
-            { "FK01", Keys::F1 },
-            { "FK02", Keys::F2 },
-            { "FK03", Keys::F3 },
-            { "FK04", Keys::F4 },
-            { "FK05", Keys::F5 },
-            { "FK06", Keys::F6 },
-            { "FK07", Keys::F7 },
-            { "FK08", Keys::F8 },
-            { "FK09", Keys::F9 },
-            { "FK10", Keys::F10 },
-            { "FK11", Keys::F11 },
-            { "FK12", Keys::F12 },
-            { "AE01", Keys::Num1 },
-            { "AE02", Keys::Num2 },
-            { "AE03", Keys::Num3 },
-            { "AE04", Keys::Num4 },
-            { "AE05", Keys::Num5 },
-            { "AE06", Keys::Num6 },
-            { "AE07", Keys::Num7 },
-            { "AE08", Keys::Num8 },
-            { "AE09", Keys::Num9 },
-            { "AE10", Keys::Num0 },
-            { "PRSC", Keys::PrintScreen },
-            { "SCLK", Keys::ScrollLock },
-            { "PAUS", Keys::Pause},
-            { "TLDE", Keys::Tilde },
-            { "BKSP", Keys::Backspace },
-            { "TAB",  Keys::Tab },
-            { "CAPS", Keys::Caps },
-            { "RTRN", Keys::Return },
-            { "LFSH", Keys::LShift },
-            { "RTSH", Keys::RShift },
-            { "LCTL", Keys::LControl },
-            { "RCTL", Keys::RControl },
-            { "LWIN", Keys::LMeta },
-            { "RWIN", Keys::RMeta },
-            { "LALT", Keys::LAlt },
-            { "RLAT", Keys::RAlt },
-            { "MENU", Keys::Menu },
-            { "INS",  Keys::Insert },
-            { "HOME", Keys::Home },
-            { "DELE", Keys::Delete },
-            { "END",  Keys::End },
-            { "PGUP", Keys::PageUp },
-            { "PGDN", Keys::PageDown },
-            { "UP",   Keys::ArrowUp },
-            { "LEFT", Keys::ArrowLeft },
-            { "DOWN", Keys::ArrowDown },
-            { "RGHT", Keys::ArrowRight },
-        };
-
-        InitKeyTables(_xdis);
-
-        XSetLocaleModifiers("");
-        IM = XOpenIM(*_xdis, nullptr, nullptr, nullptr);
-
-        if (!IM)
-        {
-            XSetLocaleModifiers("@im=none");
-            IM = XOpenIM(*_xdis, nullptr, nullptr, nullptr);    
-        }
-
-        IC = XCreateIC
-        (
-            IM,
-            XNInputStyle,
-            XIMPreeditNothing | XIMStatusNothing,
-            XNClientWindow,
-            *_xwin,
-            XNFocusWindow,
-            *_xwin,
-            nullptr
-        );
-    }
-
-    static Keys FromX11Key(int Key)
-    {
-        if (Key > (int)Keys::Last)
-            return Keys::NoKey;
-        return KeyTable[Key];
-    }
-}X11Input;
-
-// Static X11Input Variables
-XIC                             X11Input::IC;
-XIM                             X11Input::IM;
-std::map<const char*, Keys>     X11Input::X11InputMap;
-std::vector<unsigned int>       X11Input::X11KeyTable;
-std::vector<Keys>               X11Input::KeyTable;
-int                             X11Input::LastCX,
-                                X11Input::LastCY;
 
 void IX11Window::CreateWindow()
 {
@@ -224,12 +19,12 @@ void IX11Window::CreateWindow()
     _wImpl->xRoot = RootWindow(_wImpl->xDisplay, _wImpl->iScreen);
 
     // Get Display SIze
-    DisplayScreen* DpyScr = &_wImpl->_Display;
+    DisplayScreen* DpyScr = &_wImpl->dScreen;
     DpyScr->Width = XDisplayWidth(_wImpl->xDisplay, _wImpl->iScreen);
     DpyScr->Height = XDisplayHeight(_wImpl->xDisplay, _wImpl->iScreen);
 
     // Impl Attributes
-    IWindow::Attributes* Attribs = &_wImpl->_Attributes;
+    IWindow::Attributes* Attribs = &_wImpl->wAttribs;
 
     // Create Window
     _wImpl->xWindow = XCreateSimpleWindow(
@@ -358,10 +153,7 @@ void IX11Window::CreateWindow()
         XFree(XHint);
     }
 
-    WEvent CreateEvent;
-    CreateEvent.Type = WEventType::WindowCreated;
-
-    _wImpl->EventStack.push(CreateEvent);
+    _wImpl->eStack.PushWindowCreatedEvent();
 }
 
 void IX11Window::DestroyWindow()
@@ -373,7 +165,7 @@ void IX11Window::DestroyWindow()
 IX11Window::IX11Window(const IWindow::Attributes& _Attributes)
 {
     _wImpl = new __IWinImpl;
-    _wImpl->_Attributes = _Attributes;
+    _wImpl->wAttribs = _Attributes;
     CreateWindow();
 }
 
@@ -392,7 +184,7 @@ unsigned IX11Window::GetPlatform() const
 
 DisplayScreen* IX11Window::GetDisplayData() const
 {
-    return &_wImpl->_Display;
+    return &_wImpl->dScreen;
 }
 
 void IX11Window::SetCursorMode(const CursorMode& _Cursor)
@@ -408,7 +200,7 @@ void IX11Window::SetCursorMode(const CursorMode& _Cursor)
     {
         // Returning:
         //  GrabNotViewable
-        printf("grab pointer result: %d\n%s",
+        printf("grab pointer result: %d\n",
             XGrabPointer(
                 _wImpl->xDisplay, _wImpl->xWindow,
                 False, PointerMotionMask | ButtonPressMask | ButtonReleaseMask,
@@ -437,15 +229,12 @@ void* IX11Window::GetNativeData() const      { return nullptr; }
 
 WEvent IX11Window::Event() const
 {
-    WEvent Event = _wImpl->EventStack.top();
-    _wImpl->EventStack.pop();
-    return Event;
+    return _wImpl->eStack.PopEvent();
 }
 
 bool IX11Window::IsEvent() const
 {
-    // If the event stack is not empty
-    return (!_wImpl->EventStack.empty());
+    return _wImpl->eStack.IsEventStackNotEmpty();
 }
 
 void IX11Window::Update()
@@ -471,35 +260,22 @@ void IX11Window::Update()
         {
         // Pointer In Out
         case EnterNotify:
-        case LeaveNotify:
-        {
-            WEvent PointerNotify;
-            PointerNotify.Type = Type == EnterNotify ? WEventType::PointerIn : WEventType::PointerOut;
-
-            _wImpl->EventStack.push(PointerNotify);
+            _wImpl->eStack.PushPointerInEvent();
             break;
-        }
+        case LeaveNotify:
+            _wImpl->eStack.PushPointerOutEvent();
+            break;
 
         // Window Exposed
         case Expose:
-        {
-            WEvent ExposeEvent;
-            ExposeEvent.Type = WEventType::WindowExposed;
-
-            static const char* SimpleText = "Hello, World!";
-
-            _wImpl->EventStack.push(ExposeEvent);
-
-            XClearWindow(_wImpl->xDisplay, _wImpl->xWindow);
-            XDrawString(_wImpl->xDisplay, _wImpl->xWindow,
-             DefaultGC(_wImpl->xDisplay, _wImpl->iScreen), 10, 10, SimpleText, strlen(SimpleText));
+            _wImpl->eStack.PushWindowExposedEvent();
             break;
-        }
 
         // Mouse Button Event
         case ButtonPress:
         case ButtonRelease:
         {
+            // TODO: Cleanup and use eStack functions
             WEvent ButtonEvent;
             ButtonEvent.Type           = WEventType::ButtonEvent;
 
@@ -568,32 +344,14 @@ void IX11Window::Update()
                 ButtonEvent.eScroll.PointerY = Event->xmotion.y;
             }
 
-            _wImpl->EventStack.push(ButtonEvent);
+            _wImpl->eStack.PushEvent(ButtonEvent);
             break;
         }
 
         // Mouse Moved
         case MotionNotify:
-        {
-            WEvent PMovedEvent;
-            PMovedEvent.Type = WEventType::PointerMoved;
-            
-            ptt_t CursorPosition = 
-            {
-                Event->xmotion.x, Event->xmotion.y
-            };
-            ptt_t CursorDelta = X11Input::GetCursorDelta(CursorPosition);
-
-            PMovedEvent.ePMoved.PointerX = CursorPosition.first;
-            PMovedEvent.ePMoved.PointerY = CursorPosition.second;
-            PMovedEvent.ePMoved.DeltaX = CursorDelta.first;
-            PMovedEvent.ePMoved.DeltaY = CursorDelta.second;
-
-            X11Input::SaveCursorInfo(CursorPosition);
-
-            _wImpl->EventStack.push(PMovedEvent);
+            _wImpl->eStack.PushPointerMovedEvent(Event->xmotion.x, Event->xmotion.y);
             break;
-        }
 
         // Key Event
         case KeyPress:
@@ -604,38 +362,24 @@ void IX11Window::Update()
             char utf8[4];
             Xutf8LookupString(X11Input::IC, &Event->xkey, utf8, 4, &xKeySym, &xStatus);
 
-            // Char Event
-            WEvent CharEvent;
-            CharEvent.Type          = WEventType::CharEvent;
-            CharEvent.eChar         = X11Input::UTF82C32(utf8);
-
-            _wImpl->EventStack.push(CharEvent);
+            _wImpl->eStack.PushCharacterInputEvent(X11Input::UTF82C32(utf8));
         } // fall through
         case KeyRelease:
         {
-            // Key Event
-            WEvent KeyEvent;
-            KeyEvent.Type           = WEventType::KeyEvent;
-            KeyEvent.eKey.Code      = X11Input::FromX11Key(Event->xkey.keycode);
-            KeyEvent.eKey.Action    = Type == KeyPress ? KeyAction::Pressed : KeyAction::Released;
-
-            _wImpl->EventStack.push(KeyEvent);
+            _wImpl->eStack.PushKeyInputEvent(
+                X11Input::FromX11Key(Event->xkey.keycode),
+                Type == KeyPress ? KeyAction::Pressed : KeyAction::Released
+            );
             break;
         }
 
         // Structure Notify
         case ConfigureNotify:
         {
-            WEvent ChangedEvent;
-            ChangedEvent.Type = WEventType::WindowChanged;
-
-            ChangedEvent.eWChanged.W = Event->xconfigure.width;
-            ChangedEvent.eWChanged.H = Event->xconfigure.height;
-
-            ChangedEvent.eWChanged.X = Event->xconfigure.x;
-            ChangedEvent.eWChanged.Y = Event->xconfigure.y;
-
-            _wImpl->EventStack.push(ChangedEvent);
+            _wImpl->eStack.PushWindowChangedEvent(
+                Event->xconfigure.x, Event->xconfigure.y,
+                Event->xconfigure.width, Event->xconfigure.height
+            );
             break;
         }
 
@@ -659,31 +403,17 @@ void IX11Window::Update()
                     (unsigned char**)&Atoms
                 );
 
-                WEvent TopEvent;
-                TopEvent.Type = WEventType::NoEvent;
-
-                if (!_wImpl->EventStack.empty())
+                if (Atoms[0] == _wImpl->WMNetStateHidden
+                 || Atoms[0] == _wImpl->WMNetActionMinimise)
                 {
-                    TopEvent = _wImpl->EventStack.top();
-                }
-
-                if ((Atoms[0] == _wImpl->WMNetStateHidden
-                  || Atoms[0] == _wImpl->WMNetActionMinimise)
-                  && TopEvent.Type != WEventType::WindowMinimized)
-                {
-                    WEvent MinimizeEvent;
-                    MinimizeEvent.Type = WEventType::WindowMinimized;
-                    _wImpl->EventStack.push(MinimizeEvent);
+                    _wImpl->eStack.PushWindowMinimizedEvent();
                     break;
                 }
 
-                if ((Atoms[0] == _wImpl->WMNetMaximizedHorizontal
-                  || Atoms[0] == _wImpl->WMNetMaximizedVertical)
-                  && TopEvent.Type != WEventType::WindowMinimized)
+                if (Atoms[0] == _wImpl->WMNetMaximizedHorizontal
+                 || Atoms[0] == _wImpl->WMNetMaximizedVertical)
                 {
-                    WEvent WindowMaximized;
-                    WindowMaximized.Type = WEventType::WindowMaximized;
-                    _wImpl->EventStack.push(WindowMaximized);
+                    _wImpl->eStack.PushWindowMaximizedEvent();
                     break;
                 }
                 
@@ -700,10 +430,7 @@ void IX11Window::Update()
             
             if (static_cast<Atom>(Message->data.l[0]) == _wImpl->WMDeleteWindow)
             {
-                WEvent CloseEvent;
-                CloseEvent.Type = WEventType::WindowClosed;
-
-                _wImpl->EventStack.push(CloseEvent);
+                _wImpl->eStack.PushWindowCloseEvent();
             }
 
             break;
