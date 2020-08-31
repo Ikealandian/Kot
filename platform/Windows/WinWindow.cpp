@@ -7,7 +7,6 @@
 typedef struct __WinInput
 {
     static std::map<LONG, Keys> WinInputMap;
-    static int LastCX, LastCY;
     static bool InWindow;
 
     static void Init()
@@ -94,17 +93,6 @@ typedef struct __WinInput
 
     }
 
-    static void SaveCursorInfo(const ptt_t& _Cursor)
-    {
-        LastCX = _Cursor.first;
-        LastCY = _Cursor.second;
-    }
-
-    static ptt_t GetCursorDelta(const ptt_t& _Cursor)
-    {
-        return { LastCX - _Cursor.first, LastCY - _Cursor.second };
-    }
-
     static ButtonAction ActionFromMessage(int Message)
     {
         switch (Message)
@@ -169,30 +157,13 @@ typedef struct __WinInput
         return ScrollAxis::NoAxis;
     }
 
-    static Scroll GetScrollDirection(int Delta, ScrollAxis Axis)
-    {
-        switch (Axis)
-        {
-        case ScrollAxis::ScrollVertical:
-            return (Delta < 0 ? Scroll::ScrollDown : Scroll::ScrollUp);
-        case ScrollAxis::ScrollHorizontal:
-            return (Delta < 0 ? Scroll::ScrollLeft : Scroll::ScrollRight);
-        default: break;
-        }
-        return Scroll::NoScroll;
-    }
-
     static Keys FromVirtualKey(int Key)
     {
         if (WinInputMap.find(Key) == WinInputMap.end())
             return Keys::NoKey;
         return WinInputMap[Key];
     }
-
 }WinInput;
-
-int     WinInput::LastCX,
-        WinInput::LastCY;
 
 std::map<LONG, Keys>
          WinInput::WinInputMap;
@@ -221,30 +192,6 @@ LRESULT CALLBACK IWinWindow::HandleMessages(HWND hWnd, UINT msg, WPARAM wParam, 
 
 LRESULT IWinWindow::HandleMessage(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
-    // NoEvent
-    // 
-    // ~ WindowClosed
-    // ~ WindowExposed
-    // 
-    // ~ WindowChanged
-    // ~ WindowResized
-    // ~ WindowMoved
-    // 
-    // ~ PointerMoved
-    // ~ PointerIn
-    // ~ PointerOut
-    // 
-    // ~ KeyEvent
-    // ~ ButtonEvent
-    // 
-    // ~ CharEvent
-    //
-    // ~ ScrollEvent
-    //
-    // WindowMinimized
-    // WindowMaximized
-    //
-
     // TODO: XButton's
 
     switch (msg)
@@ -254,46 +201,28 @@ LRESULT IWinWindow::HandleMessage(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
     case WM_DESTROY:
     case WM_CLOSE:
     {                
-        WEvent CloseEvent;
-        CloseEvent.Type = WEventType::WindowClosed;
-
-        _wImpl->EventStack.push(CloseEvent);
+        _wImpl->eStack.PushWindowCloseEvent();
         break;
     }
 
+    // Character Input
     case WM_CHAR:
     {
-        WEvent CharEvent;
-        CharEvent.Type = WEventType::CharEvent;
-        CharEvent.eChar = wParam;
-
-        _wImpl->EventStack.push(CharEvent);
+        _wImpl->eStack.PushCharacterInputEvent(wParam);
         break;
     }
 
     case WM_MOUSEHWHEEL:
     case WM_MOUSEWHEEL:
     {
-        WEvent ScrollEvent;
-        ScrollEvent.Type = WEventType::ScrollEvent;
-
         POINT Point;
         Point.x = GET_X_LPARAM(lParam);
         Point.y = GET_Y_LPARAM(lParam);
         ScreenToClient(_wImpl->Window, &Point);
         
-        const int Delta = GET_WHEEL_DELTA_WPARAM(wParam);
+        float Delta = GET_WHEEL_DELTA_WPARAM(wParam);
 
-        ScrollEvent.eScroll.PointerX = Point.x;
-        ScrollEvent.eScroll.PointerY = Point.y;
-
-        ScrollEvent.eScroll.Axis = WinInput::GetScrollAxis(msg);
-        ScrollEvent.eScroll.Direction = WinInput::GetScrollDirection(Delta, ScrollEvent.eScroll.Axis);
-
-        ScrollEvent.eScroll.Delta = (float)Delta;
-        ScrollEvent.eScroll.AbsDelta = abs((float)Delta);
-
-        _wImpl->EventStack.push(ScrollEvent);
+        _wImpl->eStack.PushMouseScrollEvent(Delta, WinInput::GetScrollAxis(msg), Point.x, Point.y);
         break;
     }
 
@@ -308,16 +237,11 @@ LRESULT IWinWindow::HandleMessage(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
     {
         const POINTS Point = MAKEPOINTS(lParam);
 
-        WEvent ButtonEvent;
-        ButtonEvent.Type = WEventType::ButtonEvent;
-
-        ButtonEvent.eButton.Action = WinInput::ActionFromMessage(msg);
-        ButtonEvent.eButton.Code = WinInput::FromWinButton(msg, wParam);
-
-        ButtonEvent.eButton.PointerX = Point.x;
-        ButtonEvent.eButton.PointerY = Point.y;
-
-        _wImpl->EventStack.push(ButtonEvent);
+        _wImpl->eStack.PushButtonInputEvent(
+            WinInput::FromWinButton(msg, wParam),
+            WinInput::ActionFromMessage(msg),
+            Point.x, Point.y
+        );
         break;
     }
 
@@ -326,13 +250,10 @@ LRESULT IWinWindow::HandleMessage(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
     case WM_KEYUP:
     case WM_SYSKEYUP:
     {
-        // Key Event
-        WEvent KeyEvent;
-        KeyEvent.Type = WEventType::KeyEvent;
-        KeyEvent.eKey.Code = WinInput::FromVirtualKey(wParam);
-        KeyEvent.eKey.Action = msg == WM_KEYDOWN ? KeyAction::Pressed : KeyAction::Released;
-
-        _wImpl->EventStack.push(KeyEvent);
+        _wImpl->eStack.PushKeyInputEvent(
+            WinInput::FromVirtualKey(wParam),
+            WM_KEYDOWN ? KeyAction::Pressed : KeyAction::Released
+        );
         break;
     }
 
@@ -343,11 +264,7 @@ LRESULT IWinWindow::HandleMessage(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
         if (GetUpdateRect(_wImpl->Window, &rTemp, FALSE))
         {
             ValidateRect(_wImpl->Window, NULL);
-            
-            WEvent ExposeEvent;
-            ExposeEvent.Type = WEventType::WindowExposed;
-
-            _wImpl->EventStack.push(ExposeEvent);
+            _wImpl->eStack.PushWindowExposedEvent();
         }
 
         break;
@@ -358,89 +275,58 @@ LRESULT IWinWindow::HandleMessage(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
     {
         if (wParam == SIZE_MINIMIZED)
         {
-            WEvent MinimizedEvent;
-            MinimizedEvent.Type = WEventType::WindowMinimized;
-
-            _wImpl->EventStack.push(MinimizedEvent);
+            _wImpl->eStack.PushWindowMinimizedEvent();
             break;
         }
 
         if (wParam == SIZE_MAXIMIZED)
         {
-            WEvent MaximizedEvent;
-            MaximizedEvent.Type = WEventType::WindowMaximized;
-
-            _wImpl->EventStack.push(MaximizedEvent);
+            _wImpl->eStack.PushWindowMaximizedEvent();
         }
+        [[fallthrough]];
     }
-    [[fallthrough]];
     case WM_MOVE:
     {
-        WEvent ChangedEvent;
-        ChangedEvent.Type = WEventType::WindowChanged;
-
         RECT rTemp;
         GetWindowRect(_wImpl->Window, &rTemp);
 
-        ChangedEvent.eWChanged.Width = rTemp.right - rTemp.left;
-        ChangedEvent.eWChanged.Height = rTemp.bottom - rTemp.top;
+        long X = rTemp.left;
+        long Y = rTemp.top;
+ 
+        long Width = rTemp.right - rTemp.left;
+        long Height = rTemp.bottom - rTemp.top;
 
-        ChangedEvent.eWChanged.X = rTemp.left;
-        ChangedEvent.eWChanged.Y = rTemp.top;
-
-        _wImpl->EventStack.push(ChangedEvent);
+        _wImpl->eStack.PushWindowChangedEvent(X, Y, Width, Height);
         break;
     }
 
     // Pointer Moved
-    // Pointed In
-    // Pointer Out
+    // Pointed In Out
     // TODO: Use Client Region
     case WM_MOUSEMOVE:
     {
         const POINTS Point = MAKEPOINTS(lParam);
 
-        if (Point.x >= 0 && Point.x < static_cast<SHORT>(_wImpl->_Attributes.Width)
-            && Point.y >= 0 && Point.y < static_cast<SHORT>(_wImpl->_Attributes.Height))
+        if (Point.x >= 0 && Point.x < static_cast<SHORT>(_wImpl->wAttribs.Width)
+            && Point.y >= 0 && Point.y < static_cast<SHORT>(_wImpl->wAttribs.Height))
         {
-            WEvent PMovedEvent;
-            PMovedEvent.Type = WEventType::PointerMoved;
-
-            ptt_t CursorPosition =
-            {
-                Point.x, Point.y
-            };
-            ptt_t CursorDelta = WinInput::GetCursorDelta(CursorPosition);
-
-            PMovedEvent.ePMoved.PointerX = CursorPosition.first;
-            PMovedEvent.ePMoved.PointerY = CursorPosition.second;
-            PMovedEvent.ePMoved.DeltaX = CursorDelta.first;
-            PMovedEvent.ePMoved.DeltaY = CursorDelta.second;
-
-            WinInput::SaveCursorInfo(CursorPosition);
-
-            _wImpl->EventStack.push(PMovedEvent);
+            _wImpl->eStack.PushPointerMovedEvent(Point.x, Point.y);
 
             if (!WinInput::InWindow)
             {
                 SetCapture(hWnd);
+                
                 WinInput::InWindow = true;
-
-                WEvent PointerNotify;
-                PointerNotify.Type = WEventType::PointerIn;
-
-                _wImpl->EventStack.push(PointerNotify);
+                _wImpl->eStack.PushPointerInEvent();
             }
             break;
         }
         else
         {
-            WinInput::InWindow = false;
-            WEvent PointerNotify;
-            PointerNotify.Type = WEventType::PointerOut;
-
-            _wImpl->EventStack.push(PointerNotify);
             ReleaseCapture();
+            
+            WinInput::InWindow = false;
+            _wImpl->eStack.PushPointerOutEvent();
         }
         break;
     }
@@ -478,7 +364,7 @@ void IWinWindow::CreateWindow()
 
 	RegisterClassEx(&WndInfo);
 
-    IWindow::Attributes* Attribs = &_wImpl->_Attributes;
+    IWindow::Attributes* Attribs = &_wImpl->wAttribs;
 
     DWORD dwStyle = WS_VISIBLE;
 
@@ -509,7 +395,7 @@ void IWinWindow::CreateWindow()
 
     _wImpl->Window = CreateWindowExA(
         WS_EX_TOPMOST,
-        "KotWinWindow", _wImpl->_Attributes.Title,
+        "KotWinWindow", Attribs->Title,
         dwStyle,
         Attribs->X, Attribs->Y,
         Attribs->Width, Attribs->Height,
@@ -548,10 +434,7 @@ void IWinWindow::CreateWindow()
         SendMessage(_wImpl->Window, WM_SYSCOMMAND, SC_MAXIMIZE, 0);
     }
 
-    WEvent WCreateEvent;
-    WCreateEvent.Type = WEventType::WindowCreated;
-
-    _wImpl->EventStack.push(WCreateEvent);
+    _wImpl->eStack.PushWindowCreatedEvent();
 }
 
 void IWinWindow::DestroyWindow()
@@ -563,7 +446,7 @@ void IWinWindow::DestroyWindow()
 IWinWindow::IWinWindow(const IWindow::Attributes& _Attributes)
 {
     _wImpl = new __IWinImpl;
-    _wImpl->_Attributes = _Attributes;
+    _wImpl->wAttribs = _Attributes;
     CreateWindow();
 }
 
@@ -621,7 +504,7 @@ unsigned IWinWindow::GetPlatform() const
 
 DisplayScreen* IWinWindow::GetDisplayData() const
 {
-    return &_wImpl->_Display;
+    return &_wImpl->dScreen;
 }
 
 void* IWinWindow::SetNativeData(void* _Data) { return _Data; }
@@ -629,15 +512,12 @@ void* IWinWindow::GetNativeData() const { return nullptr; }
 
 WEvent IWinWindow::Event() const
 {
-    WEvent Event = _wImpl->EventStack.top();
-    _wImpl->EventStack.pop();
-    return Event;
+    return _wImpl->eStack.PopEvent();
 }
 
 bool IWinWindow::IsEvent() const
 {
-    // If the event stack is not empty
-    return (!_wImpl->EventStack.empty());
+    return _wImpl->eStack.IsEventStackNotEmpty();
 }
 
 void IWinWindow::Update()
