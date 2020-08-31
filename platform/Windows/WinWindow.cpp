@@ -1,7 +1,6 @@
 #include <windowsx.h>
 #include "WinWindow.hpp"
 
-#define ptt_t std::pair<int, int>
 #define wDestroyWindow WINUSERAPI BOOL WINAPI DestroyWindow(_In_ HWND hWnd);
 
 typedef struct __WinInput
