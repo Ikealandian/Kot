@@ -382,8 +382,8 @@ LRESULT IWinWindow::HandleMessage(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
         RECT rTemp;
         GetWindowRect(_wImpl->Window, &rTemp);
 
-        ChangedEvent.eWChanged.W = rTemp.right - rTemp.left;
-        ChangedEvent.eWChanged.H = rTemp.bottom - rTemp.top;
+        ChangedEvent.eWChanged.Width = rTemp.right - rTemp.left;
+        ChangedEvent.eWChanged.Height = rTemp.bottom - rTemp.top;
 
         ChangedEvent.eWChanged.X = rTemp.left;
         ChangedEvent.eWChanged.Y = rTemp.top;
@@ -518,8 +518,8 @@ void IWinWindow::CreateWindow()
 
     if (Attribs->aFlags & IWindow::Flags::BorderlessWindow)
     {
-        SetWindowLong(_wImpl->Window,
-            GWL_STYLE, dwStyle ^ WS_CAPTION);
+        // SetWindowLong(_wImpl->Window,
+        //  GWL_STYLE, dwStyle ^ WS_CAPTION);
     }
 
     if (Attribs->aFlags & IWindow::Flags::PositionCentered)
@@ -588,7 +588,6 @@ void IWinWindow::SetCursorMode(const CursorMode& _Cursor)
         GetClientRect(_wImpl->Window , &rect);
         MapWindowPoints(_wImpl->Window, nullptr, reinterpret_cast<POINT*>(&rect), 2);
         ClipCursor(&rect);
-        printf("%d", GetLastError());
         break;
     }
     case CursorMode::Locked:

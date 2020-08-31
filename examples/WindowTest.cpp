@@ -23,7 +23,7 @@ int main()
     Attribs.Y = 0;
     Attribs.Width = 800;
     Attribs.Height = 600;
-    Attribs.aFlags = IWindow::Flags::BorderlessWindow | IWindow::Flags::NoResizing;
+    Attribs.aFlags = IWindow::Flags::NoResizing | IWindow::Flags::PositionCentered;
 
 	IWindow* Window = IWindow::Create(Attribs);
 
@@ -48,17 +48,18 @@ int main()
             case WEventType::KeyEvent:
             {
                 if (Event.eKey.Code == Keys::Escape)
-                    ToggleCursorState(CState);
+                    Window->SetCursorMode(IWindow::CursorMode::Free);
                 break;
             }
             case WEventType::WindowChanged:
                 printf("Window Moved:\n X: %d\n Y: %d\n W: %d\n H: %d\n",
                     Event.eWChanged.X,
                     Event.eWChanged.Y,
-                    Event.eWChanged.W,
-                    Event.eWChanged.H);
+                    Event.eWChanged.Width,
+                    Event.eWChanged.Height);
                 break;
             case WEventType::ButtonEvent:
+                Window->SetCursorMode(IWindow::CursorMode::Confined);
                 printf("Button: %d:%d\n X: %d\n Y: %d\n",
                     (int)Event.eButton.Code,
                     (int)Event.eButton.Action,
