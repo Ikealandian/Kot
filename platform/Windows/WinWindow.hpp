@@ -2,8 +2,9 @@
 #define _KOT_WIN_WINDOW_INTERFACE_
 
 #include "Window.hpp"
-
 #include "Events.hpp"
+
+#include "WindowsImpl.hpp"
 
 #include <string.h>
 #include <stdio.h>
@@ -13,17 +14,6 @@
 
 #include <Windows.h>
 #undef CreateWindow
-
-struct __IWinImpl
-{
-    IWindow::Attributes _Attributes = {};
-    DisplayScreen _Display = {};
-
-    HWND Window = nullptr;
-    HINSTANCE Instance = nullptr;
-
-    std::stack<WEvent> EventStack;
-};
 
 class IWinWindow : public IWindow
 {
