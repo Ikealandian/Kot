@@ -504,7 +504,7 @@ void IWinWindow::CreateWindow()
 
     if (!(Attribs->aFlags & IWindow::Flags::NoResizing))
     {
-        dwStyle |= WS_MAXIMIZEBOX | WS_SIZEBOX;
+        dwStyle |= WS_SIZEBOX;
     }
 
     _wImpl->Window = CreateWindowExA(
@@ -515,6 +515,12 @@ void IWinWindow::CreateWindow()
         Attribs->Width, Attribs->Height,
         nullptr, nullptr, _wImpl->Instance, this
     );
+
+    if (Attribs->aFlags & IWindow::Flags::BorderlessWindow)
+    {
+        SetWindowLong(_wImpl->Window,
+            GWL_STYLE, dwStyle ^ WS_CAPTION);
+    }
 
     if (Attribs->aFlags & IWindow::Flags::PositionCentered)
     {        
