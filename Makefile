@@ -39,9 +39,9 @@ KOTOBJS := $(KOTSRC:$(SOURCE)%.cpp=$(OBJ)%.o)
 X11SRC := $(wildcard $(PLATFORM_X11)*.cpp)
 X11OBJS := $(X11SRC:$(PLATFORM_X11)%.cpp=$(OBJ)%.o)
 
-# platform/linux/
-LNXSRC := $(wildcard $(PLATFORM_LINUX)*.cpp)
-LNXOBJS := $(LNXSRC:$(PLATFORM_LINUX)%.cpp=$(OBJ)%.o)
+# platform/
+PLTSRC := $(wildcard $(PLATFORM)*.cpp)
+PLTOBJS := $(PLTSRC:$(PLATFORM)%.cpp=$(OBJ)%.o)
 
 # examples/
 EXMSRC := $(wildcard $(EXAMPLES)*.cpp)
@@ -51,7 +51,7 @@ EXMOBJS := $(EXMSRC:$(EXAMPLES)%.cpp=$(OUT)%.o)
 full: clean all
 
 # Setup, Build and Link
-all: $(OBJ) $(KOTOBJS) $(X11OBJS) $(LNXOBJS) $(LIB) $(EXMOBJS)
+all: $(OBJ) $(KOTOBJS) $(X11OBJS) $(PLTOBJS) $(LIB) $(EXMOBJS)
 
 # Make out/obj/ folders
 $(OBJ):
@@ -65,13 +65,13 @@ $(KOTOBJS): $(OBJ)%.o: $(SOURCE)%.cpp
 $(X11OBJS): $(OBJ)%.o: $(PLATFORM_X11)%.cpp
 	$(CXX) $(CXXFLAGS) $(CXXLIBS) -c $< -o $@
 
-# Build platform/linux/
-$(LNXOBJS): $(OBJ)%.o: $(PLATFORM_LINUX)%.cpp
+# Build platform/
+$(PLTOBJS): $(OBJ)%.o: $(PLATFORM)%.cpp
 	$(CXX) $(CXXFLAGS) $(CXXLIBS) -c $< -o $@
 
 # Link kotlib.a
 $(LIB):
-	ar rs $(LIB) $(KOTOBJS) $(X11OBJS) $(LNXOBJS)
+	ar rs $(LIB) $(KOTOBJS) $(X11OBJS) $(PLTOBJS)
 
 # Build examples/
 $(EXMOBJS): $(OUT)%.o: $(EXAMPLES)%.cpp
