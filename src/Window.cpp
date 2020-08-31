@@ -2,8 +2,13 @@
 #include "Window.hpp"
 
 #ifdef _KOT_PLATFORM_LINUX
-#   include "X11/X11Window.hpp"
-using PlatformWindow = IX11Window;
+#   ifdef _KOT_LINUX_PREFER_WAYLAND_
+#       include <Wayland/WayWindow.hpp>
+        using PlatformWindow = IWayWindow;
+#   else 
+#       include <X11/X11Window.hpp>
+        using PlatformWindow = IX11Window;
+#   endif
 #endif
 
 #ifdef _KOT_PLATFORM_WINDOWS
