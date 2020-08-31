@@ -8,7 +8,9 @@ typedef class __UEventStack
 {
 private:
 	std::stack<WEvent> Stack;
-	WEvent Last;
+	WEvent eLast;
+
+	int pX, pY;
 
 public:
 
@@ -40,10 +42,10 @@ public:
 
 	void PushMouseScrollEvent(
 		float& _Delta, Scroll& _Direction,
-		int& _PointerX, int& PointerY
+		int& _PointerX, int& _PointerY
 	);
 
-	void PushPointerMovedEvent(int& _PointerX, int& PointerY);
+	void PushPointerMovedEvent(int& _PointerX, int& _PointerY);
 
 	void PushWindowChangedEvent(
 		int& _X, int& _Y,
