@@ -15,6 +15,8 @@ public:
 	__UEventStack();
 	~__UEventStack();
 
+	bool IsEventStackNotEmpty() const;
+
 	void PushEvent(const WEvent& _Event);
 	WEvent PopEvent();
 
