@@ -75,7 +75,7 @@ $(LIB):
 
 # Build examples/
 $(EXMOBJS): $(OUT)%.o: $(EXAMPLES)%.cpp
-	$(CXX) $(CXXFLAGS) $(CXXLIBS) $< $(INC) -o $@
+	$(CXX) -fsanitize=leak $(CXXFLAGS) $(CXXLIBS) $< $(INC) -o $@
  
 clean:
 	$(RM) $(LIB) $(KOTOBJS) $(X11OBJS) $(LNXOBJS) $(EXMOBJS) *.o
