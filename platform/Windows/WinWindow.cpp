@@ -542,10 +542,10 @@ void IWinWindow::CreateWindow()
         SendMessage(_wImpl->Window, WM_SYSCOMMAND, SC_MAXIMIZE, 0);
     }
 
-    WEvent CreateEvent;
-    CreateEvent.Type = WEventType::WindowCreated;
+    WEvent WCreateEvent;
+    WCreateEvent.Type = WEventType::WindowCreated;
 
-    _wImpl->EventStack.push(CreateEvent);
+    _wImpl->EventStack.push(WCreateEvent);
 }
 
 void IWinWindow::DestroyWindow()
