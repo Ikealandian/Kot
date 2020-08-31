@@ -1,8 +1,16 @@
 #include <Window.hpp>
 #include <stdio.h>
 
+#ifdef _WIN32
+#   include <crtdbg.h>
+#endif
+
 int main()
 {
+#   ifdef _WIN32
+    _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+#   endif
+
     IWindow::Attributes Attribs;
     Attribs.Title = "Window Test";
     Attribs.X = 0;
