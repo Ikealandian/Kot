@@ -31,25 +31,25 @@ public:
 	void PushPointerInEvent();
 	void PushPointerOutEvent();
 
-	void PushCharacterInputEvent(char& _Character);
+	void PushCharacterInputEvent(const char32_t& _Character);
 
-	void PushKeyInputEvent(Keys& _Key, KeyAction& _Action);
+	void PushKeyInputEvent(const Keys& _Key, const KeyAction& _Action);
 
 	void PushButtonInputEvent(
-		Buttons& _Button, ButtonAction& _Action,
-		int& _PointerX, int& _PointerY
+		const Buttons& _Button, const ButtonAction& _Action,
+		const long& _PointerX, const long& _PointerY
 	);
 
 	void PushMouseScrollEvent(
-		float& _Delta, Scroll& _Direction,
-		int& _PointerX, int& _PointerY
+		const float& _Delta, const ScrollAxis& _Axis,
+		const long& _PointerX, const long& _PointerY
 	);
 
-	void PushPointerMovedEvent(int& _PointerX, int& _PointerY);
+	void PushPointerMovedEvent(const long& _PointerX, const long& _PointerY);
 
 	void PushWindowChangedEvent(
-		int& _X, int& _Y,
-		int& _Width, int& _Height
+		const long& _X, const long& _Y,
+		const long& _Width, const long& _Height
 	);
 
 }EventStack;

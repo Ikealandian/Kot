@@ -63,7 +63,7 @@ void __UEventStack::PushPointerOutEvent()
 	PushEvent({ WEventType::PointerOut });
 }
 
-void __UEventStack::PushCharacterInputEvent(char& _Character)
+void __UEventStack::PushCharacterInputEvent(const char32_t& _Character)
 {
 	WEvent CharEvent = { WEventType::CharEvent };
 	CharEvent.eChar = _Character;
@@ -71,7 +71,7 @@ void __UEventStack::PushCharacterInputEvent(char& _Character)
 	PushEvent(CharEvent);
 }
 
-void __UEventStack::PushKeyInputEvent(Keys& _Key, KeyAction& _Action)
+void __UEventStack::PushKeyInputEvent(const Keys& _Key, const KeyAction& _Action)
 {
 	WEvent KeyEvent = { WEventType::KeyEvent };
 	KeyEvent.eKey.Code = _Key;
@@ -80,7 +80,7 @@ void __UEventStack::PushKeyInputEvent(Keys& _Key, KeyAction& _Action)
 	PushEvent(KeyEvent);
 }
 
-void __UEventStack::PushButtonInputEvent(Buttons& _Button, ButtonAction& _Action, int& _PointerX, int& _PointerY)
+void __UEventStack::PushButtonInputEvent(const Buttons& _Button, const ButtonAction& _Action, const long& _PointerX, const long& _PointerY)
 {
 	WEvent ButtonEvent = { WEventType::KeyEvent };
 	ButtonEvent.eButton.Code = _Button;
@@ -91,27 +91,25 @@ void __UEventStack::PushButtonInputEvent(Buttons& _Button, ButtonAction& _Action
 	PushEvent(ButtonEvent);
 }
 
-void __UEventStack::PushMouseScrollEvent(float& _Delta, Scroll& _Direction, int& _PointerX, int& _PointerY)
+void __UEventStack::PushMouseScrollEvent(const float& _Delta, const ScrollAxis& _Axis, const long& _PointerX, const long& _PointerY)
 {
 	WEvent ScrollEvent = { WEventType::ScrollEvent };
 
 	ScrollEvent.eScroll.Delta = _Delta;
 	ScrollEvent.eScroll.AbsDelta = abs(_Delta);
 
-	ScrollEvent.eScroll.Direction = _Direction;
+	ScrollEvent.eScroll.Axis = _Axis;
 
-	switch (_Direction)
+	switch (_Axis)
 	{
-	case Scroll::ScrollUp:
-	case Scroll::ScrollDown:
-		ScrollEvent.eScroll.Axis = ScrollAxis::ScrollVertical;
+	case ScrollAxis::ScrollVertical:
+		ScrollEvent.eScroll.Direction = (_Delta < 0 ? Scroll::ScrollDown : Scroll::ScrollUp);
 		break;
-	case Scroll::ScrollLeft:
-	case Scroll::ScrollRight:
-		ScrollEvent.eScroll.Axis = ScrollAxis::ScrollHorizontal;
+	case ScrollAxis::ScrollHorizontal:
+		ScrollEvent.eScroll.Direction = (_Delta < 0 ? Scroll::ScrollLeft : Scroll::ScrollRight);
 		break;
-	default:
-		ScrollEvent.eScroll.Axis = ScrollAxis::NoAxis;
+	default: 
+		ScrollEvent.eScroll.Direction = Scroll::NoScroll;
 		break;
 	}
 
@@ -121,7 +119,7 @@ void __UEventStack::PushMouseScrollEvent(float& _Delta, Scroll& _Direction, int&
 	PushEvent(ScrollEvent);
 }
 
-void __UEventStack::PushPointerMovedEvent(int& _PointerX, int& _PointerY)
+void __UEventStack::PushPointerMovedEvent(const long& _PointerX, const long& _PointerY)
 {
 	WEvent PointerMovedEvent = { WEventType::PointerMoved };
 
@@ -134,7 +132,7 @@ void __UEventStack::PushPointerMovedEvent(int& _PointerX, int& _PointerY)
 	PushEvent(PointerMovedEvent);
 }
 
-void __UEventStack::PushWindowChangedEvent(int& _X, int& _Y, int& _Width, int& _Height)
+void __UEventStack::PushWindowChangedEvent(const long& _X, const long& _Y, const long& _Width, const long& _Height)
 {
 	WEvent WindowChangedEvent = { WEventType::WindowChanged };
 
