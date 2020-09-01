@@ -19,8 +19,13 @@ public:
 
 	bool IsEventStackNotEmpty() const;
 
+	void ClearStack();
+	
 	void PushEvent(const WEvent& _Event);
 	WEvent PopEvent();
+
+	WEvent PeekEvent(long _Position = 0) const;
+	WEvent PokeEvent(long _Position = 0);
 
 	void PushWindowCreatedEvent();
 	void PushWindowCloseEvent();
