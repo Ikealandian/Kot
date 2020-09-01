@@ -16,17 +16,34 @@ bool __UEventStack::IsEventStackNotEmpty() const
 	return !(Stack.empty());
 }
 
+void __UEventStack::ClearStack()
+{
+	Stack.clear();
+}
+
 void __UEventStack::PushEvent(const WEvent& _Event)
 {
 	eLast = _Event;
-	Stack.push(_Event);
+	Stack.push_back(_Event);
 }
 
 WEvent __UEventStack::PopEvent()
 {
-	WEvent& eTop = Stack.top();
-	Stack.pop();
+	WEvent& eTop = Stack.back();
+	Stack.pop_back();
 	return eTop;
+}
+
+WEvent __UEventStack::PeekEvent(long _Position) const
+{
+	return Stack[_Position];
+}
+
+WEvent __UEventStack::PokeEvent(long _Position)
+{
+	WEvent PokedEvent = Stack[_Position];
+	Stack.erase(Stack.begin() + _Position);
+	return PokedEvent;
 }
 
 void __UEventStack::PushWindowCreatedEvent()
