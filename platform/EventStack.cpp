@@ -39,11 +39,14 @@ WEvent __UEventStack::PeekEvent(long _Position) const
 	return Stack[_Position];
 }
 
-WEvent __UEventStack::PokeEvent(long _Position)
+WEvent& __UEventStack::PokeEvent(long _Position)
 {
-	WEvent PokedEvent = Stack[_Position];
+	return Stack[_Position];
+}
+
+void __UEventStack::EraseEvent(long _Position)
+{
 	Stack.erase(Stack.begin() + _Position);
-	return PokedEvent;
 }
 
 void __UEventStack::PushWindowCreatedEvent()
