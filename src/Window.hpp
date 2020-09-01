@@ -70,8 +70,8 @@ public:
     virtual unsigned GetPlatform() const = 0;
     virtual DisplayScreen* GetDisplayData() const = 0;
     
-    virtual void SetCursorMode(const CursorMode& _Cursor) = 0;
-    virtual void SetCursorState(const CursorState& _Cursor) = 0;
+    virtual void SetCursorMode(const WCursorMode& _Cursor) = 0;
+    virtual void SetCursorState(const WCursorState& _Cursor) = 0;
 
     virtual void* SetNativeData(void* _Data) = 0;
     virtual void* GetNativeData() const = 0;
