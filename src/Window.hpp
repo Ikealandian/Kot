@@ -9,6 +9,31 @@ typedef struct __IWinDisplay
     unsigned Width, Height;
 }DisplayScreen;
 
+// Cursor Mode
+enum struct WCursorMode
+{
+    Free,
+    Confined,
+    Locked
+};
+
+// Cursor State
+enum struct WCursorState
+{
+    Shown,
+    Hidden
+};
+
+// Window Flags
+enum WFlags : unsigned
+{
+    PositionCentered    = (1 << 0),
+    NoResizing          = (1 << 1),
+    WindowFullScreen    = (1 << 2),
+    WindowMaximized     = (1 << 3),
+    BorderlessWindow    = (1 << 4)
+};
+
 // Window Interface
 typedef class __IWinInterface
 {
@@ -19,31 +44,6 @@ public:
         Linux,
         Windows,
         Mach,
-    };
-
-    // Cursor Mode
-    enum struct CursorMode
-    {
-        Free,
-        Confined,
-        Locked
-    };
-
-    // Cursor State
-    enum struct CursorState
-    {
-        Shown,
-        Hidden
-    };
-
-    // Window Flags
-    enum Flags : unsigned
-    {
-        PositionCentered        = (1 << 0),
-        NoResizing              = (1 << 1),
-        WindowFullScreen        = (1 << 2),
-        WindowMaximized         = (1 << 3),
-        BorderlessWindow        = (1 << 4)
     };
 
     // Window Attributes
