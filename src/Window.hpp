@@ -59,6 +59,7 @@ protected:
     // Friends
     friend class IX11Vulkan;
     friend class IWinVulkan;
+    friend class __UEventHandler;
 
     // Platform Implementation
     struct __IWinImpl* _wImpl;
