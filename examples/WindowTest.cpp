@@ -14,6 +14,12 @@ bool WindowClosedEvent(const WEvent& _Event)
     return true; // Stop looking through events
 }
 
+bool CharEvent(const WEvent& _Event)
+{
+    putchar(_Event.eChar);
+    return false; // Continue looking through events
+}
+
 bool ButtonEvent(const WEvent& _Event)
 {
     puts("Button Event");
@@ -40,6 +46,7 @@ int main()
     // Callbacks
     Handler.AddCallback(WEventType::WindowClosed, WindowClosedEvent);
     Handler.AddCallback(WEventType::ButtonEvent, ButtonEvent);
+    Handler.AddCallback(WEventType::CharEvent, CharEvent);
 
     while (g_Running)
     {
