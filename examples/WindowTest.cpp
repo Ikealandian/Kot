@@ -1,9 +1,24 @@
 #include <Window.hpp>
-#include <stdio.h>
+#include <EventHandler.hpp>
 
+#include <stdio.h>
 #ifdef _WIN32
 #   include <crtdbg.h>
 #endif
+
+bool g_Running = true;
+
+bool WindowClosedEvent(const WEvent& _Event)
+{
+    g_Running = false;
+    return true; // Stop looking through events
+}
+
+bool ButtonEvent(const WEvent& _Event)
+{
+    puts("Button Event");
+    return false; // Continue looking through events
+}
 
 int main()
 {
@@ -20,52 +35,23 @@ int main()
     Attribs.aFlags = IWindow::Flags::NoResizing | IWindow::Flags::PositionCentered;
 
 	IWindow* Window = IWindow::Create(Attribs);
+    WEventHandler Handler(&Window);
 
-	bool Running = true;
-    while (Running)
+    // Callbacks
+    Handler.AddCallback(WEventType::WindowClosed, WindowClosedEvent);
+    Handler.AddCallback(WEventType::ButtonEvent, ButtonEvent);
+
+    while (g_Running)
     {
         Window->Update();
+
+        // Can still look through events manually
         while (Window->IsEvent())
         {
             WEvent Event = Window->Event();
-            switch (Event.Type)
+            if (Event.Type == WEventType::CharEvent)
             {
-            case WEventType::WindowClosed:
-                // Break Loop
-                Running = false;
-                break;
-            case WEventType::KeyEvent:
-            {
-                break;
-            }
-            case WEventType::WindowChanged:
-                printf("Window Moved:\n X: %d\n Y: %d\n W: %d\n H: %d\n",
-                    Event.eWChanged.X,
-                    Event.eWChanged.Y,
-                    Event.eWChanged.Width,
-                    Event.eWChanged.Height);
-                break;
-            case WEventType::ButtonEvent:
-                printf("Button: %d:%d\n X: %d\n Y: %d\n",
-                    (int)Event.eButton.Code,
-                    (int)Event.eButton.Action,
-                    Event.eButton.PointerX,
-                    Event.eButton.PointerY);
-                break;
-            case WEventType::ScrollEvent:
-                printf("Scroll: %d\n X: %d\n Y: %d\n",
-                    (int)Event.eScroll.Delta,
-                    Event.eScroll.PointerX,
-                    Event.eScroll.PointerY);
-                break;
-            case WEventType::WindowMinimized:
-                printf("Window Minimized\n");
-                break;
-            case WEventType::WindowMaximized:
-                printf("Window Maximized\n");
-                break;
-            default:
-                break;
+                putchar(Event.eChar);
             }
         }
     }
