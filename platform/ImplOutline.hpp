@@ -4,11 +4,17 @@
 #include "EventStack.hpp"
 #include <Window.hpp>
 
+#include <functional>
+
+typedef std::function<void(void)> IWindowUpdateEndCallback;
+
 typedef struct __WImplOutline
 {
 	IWindow::Attributes wAttribs = {};
 	DisplayScreen dScreen = {};
 	EventStack eStack;
+
+	IWindowUpdateEndCallback uCallback;
 }ImplOutline;
 
 #endif
