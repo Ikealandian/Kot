@@ -240,6 +240,7 @@ bool IX11Window::IsEvent() const
 void IX11Window::Update()
 {
     // Lock Cursor
+    _wImpl->eStack.ClearStack();
 
     while (XPending(_wImpl->xDisplay))
     {
@@ -439,4 +440,7 @@ void IX11Window::Update()
         default: break;
         }
     }
+
+    if (_wImpl->uCallback)
+        _wImpl->uCallback();
 }

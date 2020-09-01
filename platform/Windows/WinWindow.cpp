@@ -355,10 +355,15 @@ bool IWinWindow::IsEvent() const
 
 void IWinWindow::Update()
 {
+    _wImpl->eStack.ClearStack();
+
     MSG mTempMsg;
     while (PeekMessage(&mTempMsg, nullptr, 0, 0, PM_REMOVE))
     {
         TranslateMessage(&mTempMsg);
         DispatchMessage(&mTempMsg);
     }
+
+    if (_wImpl->uCallback)
+        _wImpl->uCallback();
 }
