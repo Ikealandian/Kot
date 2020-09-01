@@ -2,12 +2,12 @@
 #define _KOT_EVENT_STACK_
 
 #include <Events.hpp>
-#include <stack>
+#include <vector>
 
 typedef class __UEventStack
 {
 private:
-	std::stack<WEvent> Stack;
+	std::vector<WEvent> Stack;
 	WEvent eLast;
 
 	int pX, pY;
