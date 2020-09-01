@@ -32,7 +32,7 @@ int main()
     Attribs.Y = 0;
     Attribs.Width = 800;
     Attribs.Height = 600;
-    Attribs.aFlags = IWindow::Flags::NoResizing | IWindow::Flags::PositionCentered;
+    Attribs.aFlags = WFlags::NoResizing | WFlags::PositionCentered;
 
 	IWindow* Window = IWindow::Create(Attribs);
     WEventHandler Handler(&Window);
