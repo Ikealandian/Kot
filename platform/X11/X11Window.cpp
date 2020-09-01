@@ -83,7 +83,7 @@ void IX11Window::CreateWindow()
     // Flags
 
     // Maximize Window
-    if (Attribs->aFlags & IWindow::Flags::WindowMaximized)
+    if (Attribs->aFlags & WFlags::WindowMaximized)
     {
         XEvent Event = {};
 
@@ -101,7 +101,7 @@ void IX11Window::CreateWindow()
     }
 
     // Fullscreen Window
-    if (Attribs->aFlags & IWindow::Flags::WindowFullScreen)
+    if (Attribs->aFlags & WFlags::WindowFullScreen)
     {
         XEvent Event = {};
 
@@ -119,7 +119,7 @@ void IX11Window::CreateWindow()
     }
 
     // Window Centered
-    if (Attribs->aFlags & IWindow::Flags::PositionCentered)
+    if (Attribs->aFlags & WFlags::PositionCentered)
     {
         // *Centers All Screens
         //  I think
@@ -135,7 +135,7 @@ void IX11Window::CreateWindow()
     }
 
     // No Window Resizing
-    if (Attribs->aFlags & IWindow::Flags::NoResizing)
+    if (Attribs->aFlags & WFlags::NoResizing)
     {
         XSizeHints* XHint;
         XHint = XAllocSizeHints();
@@ -187,16 +187,16 @@ DisplayScreen* IX11Window::GetDisplayData() const
     return &_wImpl->dScreen;
 }
 
-void IX11Window::SetCursorMode(const CursorMode& _Cursor)
+void IX11Window::SetCursorMode(const WCursorMode& _Cursor)
 {
     switch (_Cursor)
     {
-    case CursorMode::Free:
+    case WCursorMode::Free:
     {
         XUngrabPointer(_wImpl->xDisplay, CurrentTime);
         break;
     }
-    case CursorMode::Confined:
+    case WCursorMode::Confined:
     {
         // Returning:
         //  GrabNotViewable
@@ -210,13 +210,13 @@ void IX11Window::SetCursorMode(const CursorMode& _Cursor)
 
         break;
     }
-    case CursorMode::Locked:
+    case WCursorMode::Locked:
         break;
     default: break;
     }
 }
 
-void IX11Window::SetCursorState(const CursorState& _Cursor)
+void IX11Window::SetCursorState(const WCursorState& _Cursor)
 {
     switch (_Cursor)
     {

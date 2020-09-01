@@ -201,7 +201,7 @@ void IWinWindow::CreateWindow()
 
     DWORD dwStyle = WS_VISIBLE;
 
-    if (Attribs->aFlags & IWindow::Flags::WindowFullScreen)
+    if (Attribs->aFlags & WFlags::WindowFullScreen)
     {
         HMONITOR hmon = MonitorFromPoint({ (LONG)Attribs->X, (LONG)Attribs->Y }, MONITOR_DEFAULTTOPRIMARY);
         MONITORINFO mi = { sizeof(mi) };
@@ -221,7 +221,7 @@ void IWinWindow::CreateWindow()
         dwStyle |= WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX;
     }
 
-    if (!(Attribs->aFlags & IWindow::Flags::NoResizing))
+    if (!(Attribs->aFlags & WFlags::NoResizing))
     {
         dwStyle |= WS_SIZEBOX;
     }
@@ -235,13 +235,13 @@ void IWinWindow::CreateWindow()
         nullptr, nullptr, _wImpl->Instance, this
     );
 
-    if (Attribs->aFlags & IWindow::Flags::BorderlessWindow)
+    if (Attribs->aFlags & WFlags::BorderlessWindow)
     {
         // SetWindowLong(_wImpl->Window,
         //  GWL_STYLE, dwStyle ^ WS_CAPTION);
     }
 
-    if (Attribs->aFlags & IWindow::Flags::PositionCentered)
+    if (Attribs->aFlags & WFlags::PositionCentered)
     {        
         HWND wParent = GetDesktopWindow();
 
@@ -262,7 +262,7 @@ void IWinWindow::CreateWindow()
         MoveWindow(_wImpl->Window, Attribs->X, Attribs->Y, nWidth, nHeight, FALSE);
     }
 
-    if (Attribs->aFlags & IWindow::Flags::WindowMaximized)
+    if (Attribs->aFlags & WFlags::WindowMaximized)
     {
         SendMessage(_wImpl->Window, WM_SYSCOMMAND, SC_MAXIMIZE, 0);
     }
@@ -289,16 +289,16 @@ IWinWindow::~IWinWindow()
     delete _wImpl;
 }
 
-void IWinWindow::SetCursorMode(const CursorMode& _Cursor)
+void IWinWindow::SetCursorMode(const WCursorMode& _Cursor)
 {
     switch (_Cursor)
     {
-    case CursorMode::Free:
+    case WCursorMode::Free:
     {
         ClipCursor(nullptr);
         break;
     }
-    case CursorMode::Confined:
+    case WCursorMode::Confined:
     {
         RECT rect;
         GetClientRect(_wImpl->Window , &rect);
@@ -306,22 +306,22 @@ void IWinWindow::SetCursorMode(const CursorMode& _Cursor)
         ClipCursor(&rect);
         break;
     }
-    case CursorMode::Locked:
+    case WCursorMode::Locked:
         break;
     default: break;
     }
 }
 
-void IWinWindow::SetCursorState(const CursorState& _Cursor)
+void IWinWindow::SetCursorState(const WCursorState& _Cursor)
 {
     switch (_Cursor)
     {
-    case CursorState::Shown:
+    case WCursorState::Shown:
     {
         while (ShowCursor(TRUE) < 0);
         break;
     }
-    case CursorState::Hidden:
+    case WCursorState::Hidden:
     {
         while (ShowCursor(FALSE) >= 0);
         break;
