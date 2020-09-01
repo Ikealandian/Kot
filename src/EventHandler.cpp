@@ -16,7 +16,8 @@ void __UEventHandler::OnWindowUpdateEnd(void)
 		WEvent Event = StackCopy.PopEvent();
 		if (Callbacks.find(Event.Type) != Callbacks.end())
 		{
-			if (Callbacks[Event.Type](Window->_wImpl->eStack.PokeEvent(Position)))
+			Window->_wImpl->eStack.EraseEvent(Position);
+			if (Callbacks[Event.Type](Event))
 				return;
 		}
 		Position++;
