@@ -25,7 +25,8 @@ public:
 	WEvent PopEvent();
 
 	WEvent PeekEvent(long _Position = 0) const;
-	WEvent PokeEvent(long _Position = 0);
+	WEvent& PokeEvent(long _Position = 0);
+	void EraseEvent(long _Position = 0);
 
 	void PushWindowCreatedEvent();
 	void PushWindowCloseEvent();
