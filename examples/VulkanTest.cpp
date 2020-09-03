@@ -8,7 +8,7 @@ int main()
     IWindow::Attributes Attribs;
     Attribs.Width = 800;
     Attribs.Height = 600;
-    Attribs.aFlags = IWindow::Flags::PositionCentered;
+    Attribs.aFlags = WFlags::PositionCentered;
 
     IWindow* VkWin = IWindow::Create(Attribs);
     IVulkan* Vk  = IVulkan::Create(&VkWin);
